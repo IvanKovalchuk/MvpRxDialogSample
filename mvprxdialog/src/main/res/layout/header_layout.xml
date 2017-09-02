@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/header_size"
+
+    android:background="?attr/colorPrimary"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/header_size"
+        android:layout_height="@dimen/header_size"
+
+        android:adjustViewBounds="true"
+        app:srcCompat="@android:drawable/ic_dialog_alert" />
+    <!--
+    app:srcCompat="@android:drawable/stat_notify_error"
+    app:srcCompat="@android:drawable/stat_sys_warning"
+    app:srcCompat="@android:drawable/ic_dialog_info"
+    app:srcCompat="@android:drawable/ic_dialog_alert"
+    -->
+
+    <TextView
+        android:id="@+id/headerText"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/header_size"
+        android:layout_marginLeft="@dimen/margin_size"
+        android:layout_marginRight="@dimen/margin_size"
+        android:gravity="center_vertical"
+        android:text="header"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="?attr/colorBackgroundFloating" />
+</LinearLayout>
