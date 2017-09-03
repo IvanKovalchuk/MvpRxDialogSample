@@ -1,6 +1,5 @@
 package com.kivsw.mvprxdialog;
 
-import java.util.Currency;
 import java.util.Hashtable;
 import java.util.Map;
 

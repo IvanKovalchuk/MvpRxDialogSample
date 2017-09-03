@@ -1,8 +1,6 @@
 package com.kivsw.mvprxdialog;
 
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -148,5 +146,7 @@ public class MvpMessageBox extends BaseMvpFragment {
              else if (viewId == R.id.dlButtonExtra)  presenter.onPress(MvpMessageBoxPresenter.EXTRA_BUTTON);
         }
     };
+
+
 
 }

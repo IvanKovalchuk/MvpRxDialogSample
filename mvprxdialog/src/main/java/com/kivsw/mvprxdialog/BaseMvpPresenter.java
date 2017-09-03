@@ -1,13 +1,11 @@
 package com.kivsw.mvprxdialog;
 
-import android.support.v4.app.Fragment;
-
 /**
  * Created by ivan on 9/2/2017.
  */
 
 public abstract class BaseMvpPresenter
-        implements Contract.IPresenter
+        implements Contract.IDialogPresenter
 {
     long presenterId=0;
 

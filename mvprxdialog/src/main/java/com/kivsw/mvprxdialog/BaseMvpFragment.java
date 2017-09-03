@@ -35,10 +35,10 @@ implements Contract.IView
 
     protected final static String PRESENTER_ID="presenterId";
     private long presenterId=0;
-    private Contract.IPresenter presenter=null;
+    private Contract.IDialogPresenter presenter=null;
 
 
-    protected Contract.IPresenter  getPresenter()
+    protected Contract.IDialogPresenter  getPresenter()
     {
         return presenter;
     }
@@ -52,7 +52,7 @@ implements Contract.IView
         presenterId = getArguments().getLong(PRESENTER_ID);
         if(presenterId<=0)
             throw new RuntimeException("PRESENTER_ID argument must be for this fragment " + this.getClass().getName());
-        presenter = pm.getPresenter(presenterId);
+        presenter = (Contract.IDialogPresenter) pm.getPresenter(presenterId);
         if(presenter==null)
             throw new RuntimeException("cannot find a presenter for this fragment " + this.getClass().getName());
 
@@ -70,6 +70,19 @@ implements Contract.IView
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return super.onCreateDialog(savedInstanceState);
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        getPresenter().setUI(this);
+    }
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        getPresenter().setUI(null);
     }
 
     @Override

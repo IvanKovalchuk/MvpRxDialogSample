@@ -11,9 +11,14 @@ public interface Contract {
         void setUI(IView view);
         void setPresenterId(long id);
         long getPresenterId();
+
+
+    }
+
+    interface IDialogPresenter extends IPresenter
+    {
         void onCancel();
         void onDismiss();
-
     }
 
     interface IView
