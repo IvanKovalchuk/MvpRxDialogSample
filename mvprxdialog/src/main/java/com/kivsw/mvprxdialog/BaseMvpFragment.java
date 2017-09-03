@@ -123,7 +123,7 @@ implements Contract.IView
     protected final static String  TITLE_PARAM="TITLE_PARAM";
     protected void setupTitle(View rootView)
     {
-        headerTextView =  (TextView)rootView.findViewById(R.id.dlMessageTextView);
+        headerTextView =  (TextView)rootView.findViewById(R.id.headerText);
         headerTextView.setText(Html.fromHtml(getArguments().getString(TITLE_PARAM)));
     }
 

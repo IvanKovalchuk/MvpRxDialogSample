@@ -9,13 +9,14 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/headerIcon"
         android:layout_width="@dimen/header_size"
         android:layout_height="@dimen/header_size"
 
         android:adjustViewBounds="true"
-        app:srcCompat="@android:drawable/ic_dialog_alert" />
+         />
     <!--
+
     app:srcCompat="@android:drawable/stat_notify_error"
     app:srcCompat="@android:drawable/stat_sys_warning"
     app:srcCompat="@android:drawable/ic_dialog_info"

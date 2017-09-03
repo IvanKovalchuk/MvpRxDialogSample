@@ -1,6 +1,7 @@
 package com.kivsw.mvprxdialog;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -23,6 +25,7 @@ public class MvpMessageBox extends BaseMvpFragment {
     private Button okBtn= null, cancelBtn= null, extraBtn= null;
     private TextView messageTextView, headerTextView;
     private CheckBox checkBoxDontShowAgain=null;
+    private ImageView headerIcon=null;
 
 
 
@@ -30,7 +33,8 @@ public class MvpMessageBox extends BaseMvpFragment {
         // Required empty public constructor
     }
 
-    private final static String MESSAGE_PARAM="MESSAGE_PARAM",
+    private final static String ICON_PARAM="ICON_PARAM",
+                                MESSAGE_PARAM="MESSAGE_PARAM",
                                 DONT_SHOW_AGAIN="DONT_SHOW_AGAIN",
                                 OK_TITLE_PARAM="OK_TITLE_PARAM",
                                 CANCEL_BTN_PARAM="CANCEL_BTN_PARAM",
@@ -52,12 +56,13 @@ public class MvpMessageBox extends BaseMvpFragment {
      *  @param askDontShowAgain enables "Don't show again" checkBox
      */
     // TODO: Rename and change types and number of parameters
-    public static MvpMessageBox newInstance(long presenterId, String title, String msg, boolean askDontShowAgain, String okTitle, String cancelTitle, String exTitle)
+    public static MvpMessageBox newInstance(long presenterId, Bitmap icon, String title, String msg, boolean askDontShowAgain, String okTitle, String cancelTitle, String exTitle)
     {
         MvpMessageBox fragment = new MvpMessageBox();
         Bundle args = new Bundle();
 
         args.putLong(PRESENTER_ID, presenterId);
+        args.putParcelable(ICON_PARAM,icon);
         args.putString(MESSAGE_PARAM,msg);
         args.putString(TITLE_PARAM,title);
         args.putBoolean(DONT_SHOW_AGAIN,askDontShowAgain);
@@ -82,8 +87,6 @@ public class MvpMessageBox extends BaseMvpFragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.messagebox_layout, container, false);
 
-
-
         okBtn= (Button)rootView.findViewById(R.id.dlButtonOk);
         cancelBtn=(Button)rootView.findViewById(R.id.dlButtonCancel);
         extraBtn=(Button)rootView.findViewById(R.id.dlButtonExtra);
@@ -91,6 +94,11 @@ public class MvpMessageBox extends BaseMvpFragment {
         okBtn.setOnClickListener(onClickListener);
         cancelBtn.setOnClickListener(onClickListener);
         extraBtn.setOnClickListener(onClickListener);
+
+        headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
+        Bitmap icon = getArguments().getParcelable(ICON_PARAM);
+        headerIcon.setImageBitmap(icon);
+        if(icon==null) headerIcon.setVisibility(View.GONE);
 
         messageTextView = (TextView)rootView.findViewById(R.id.dlMessageTextView);
         messageTextView.setText(Html.fromHtml(getArguments().getString(MESSAGE_PARAM)));
