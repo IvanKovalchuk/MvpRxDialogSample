@@ -2,12 +2,14 @@ package com.kivsw.mvprxdialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -19,6 +21,8 @@ implements Contract.IView
 {
 
     TextView headerTextView;
+    private ImageView headerIcon=null;
+
     public BaseMvpFragment() {
        // setStyle(STYLE_NO_TITLE, getTheme());
     }
@@ -120,9 +124,16 @@ implements Contract.IView
         getPresenter().onCancel();
     }
 
-    protected final static String  TITLE_PARAM="TITLE_PARAM";
+    protected final static String  TITLE_PARAM="TITLE_PARAM",
+            ICON_PARAM="ICON_PARAM";
     protected void setupTitle(View rootView)
     {
+        headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
+        Bitmap icon = getArguments().getParcelable(ICON_PARAM);
+        headerIcon.setImageBitmap(icon);
+        if(icon==null) headerIcon.setVisibility(View.GONE);
+
+
         headerTextView =  (TextView)rootView.findViewById(R.id.headerText);
         headerTextView.setText(Html.fromHtml(getArguments().getString(TITLE_PARAM)));
     }

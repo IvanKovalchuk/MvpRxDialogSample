@@ -26,17 +26,17 @@ public class PresenterManager {
         map = new Hashtable();
     }
 
-    long generateId()
+    protected long generateId()
     {
         return nextId++;
     }
 
-    Contract.IPresenter getPresenter(long presenterId)
+    public Contract.IPresenter getPresenter(long presenterId)
     {
         return map.get(presenterId);
     };
 
-    long addNewPresenter(Contract.IPresenter presenter)
+    public long addNewPresenter(Contract.IPresenter presenter)
     {
         long presenterId = generateId();
         presenter.setPresenterId(presenterId);
@@ -44,7 +44,7 @@ public class PresenterManager {
         return presenterId;
     }
 
-    void deletePresenter(long presenterId)
+    public void deletePresenter(long presenterId)
     {
         map.remove(presenterId);
     }

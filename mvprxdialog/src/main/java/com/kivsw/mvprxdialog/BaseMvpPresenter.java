@@ -27,6 +27,7 @@ public abstract class BaseMvpPresenter
 
     @Override
     public void onDismiss() {
+
         deletePresenter();
     }
 

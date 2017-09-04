@@ -25,7 +25,6 @@ public class MvpMessageBox extends BaseMvpFragment {
     private Button okBtn= null, cancelBtn= null, extraBtn= null;
     private TextView messageTextView, headerTextView;
     private CheckBox checkBoxDontShowAgain=null;
-    private ImageView headerIcon=null;
 
 
 
@@ -33,7 +32,7 @@ public class MvpMessageBox extends BaseMvpFragment {
         // Required empty public constructor
     }
 
-    private final static String ICON_PARAM="ICON_PARAM",
+    private final static String
                                 MESSAGE_PARAM="MESSAGE_PARAM",
                                 DONT_SHOW_AGAIN="DONT_SHOW_AGAIN",
                                 OK_TITLE_PARAM="OK_TITLE_PARAM",
@@ -85,7 +84,7 @@ public class MvpMessageBox extends BaseMvpFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.messagebox_layout, container, false);
+        View rootView = inflater.inflate(R.layout.mvp_messagebox, container, false);
 
         okBtn= (Button)rootView.findViewById(R.id.dlButtonOk);
         cancelBtn=(Button)rootView.findViewById(R.id.dlButtonCancel);
@@ -94,11 +93,6 @@ public class MvpMessageBox extends BaseMvpFragment {
         okBtn.setOnClickListener(onClickListener);
         cancelBtn.setOnClickListener(onClickListener);
         extraBtn.setOnClickListener(onClickListener);
-
-        headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
-        Bitmap icon = getArguments().getParcelable(ICON_PARAM);
-        headerIcon.setImageBitmap(icon);
-        if(icon==null) headerIcon.setVisibility(View.GONE);
 
         messageTextView = (TextView)rootView.findViewById(R.id.dlMessageTextView);
         messageTextView.setText(Html.fromHtml(getArguments().getString(MESSAGE_PARAM)));

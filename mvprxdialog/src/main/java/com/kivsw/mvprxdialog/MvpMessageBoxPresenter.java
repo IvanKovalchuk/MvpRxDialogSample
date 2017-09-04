@@ -14,6 +14,9 @@ import io.reactivex.annotations.NonNull;
 
 public class MvpMessageBoxPresenter extends BaseMvpPresenter
 {
+    private MvpMessageBoxPresenter()
+    {};
+
     MvpMessageBox view;
     @Override
     public Contract.IView getUI() {
@@ -36,6 +39,7 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
         if(singleEmmiter!=null)
             singleEmmiter.onSuccess(button);
         deletePresenter();
+
     }
 
     @Override
