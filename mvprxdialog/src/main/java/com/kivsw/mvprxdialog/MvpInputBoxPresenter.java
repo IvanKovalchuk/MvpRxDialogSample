@@ -67,6 +67,10 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
         deletePresenter();
     }
 
+    void onCancelPress()
+    {
+        onCancel();
+    };
     @Override
     protected void deletePresenter()
     {

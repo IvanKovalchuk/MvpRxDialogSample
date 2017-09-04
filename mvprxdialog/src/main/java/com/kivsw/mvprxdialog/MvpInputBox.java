@@ -78,7 +78,7 @@ public class MvpInputBox extends BaseMvpFragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
+                ((MvpInputBoxPresenter)getPresenter()).onCancelPress();
             }
         });
         cancelBtn.setText(android.R.string.cancel);
