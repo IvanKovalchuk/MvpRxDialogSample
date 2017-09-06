@@ -1,14 +1,17 @@
-package com.kivsw.mvprxdialog;
+package com.kivsw.mvprxdialog.inputbox;
 
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 
+import com.kivsw.mvprxdialog.BaseMvpPresenter;
+import com.kivsw.mvprxdialog.Contract;
+import com.kivsw.mvprxdialog.PresenterManager;
+
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeOnSubscribe;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.internal.operators.maybe.MaybeNever;
 
 /**
  * Created by ivan on 9/3/2017.
@@ -90,7 +93,7 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
         MvpInputBoxPresenter presenter = new MvpInputBoxPresenter();
         presenter.testValue = testValue;
 
-        long id=PresenterManager.getInstance().addNewPresenter(presenter);
+        long id= PresenterManager.getInstance().addNewPresenter(presenter);
         MvpInputBox fragment = MvpInputBox.newInstance(id, icon, title, msg, InputValue, inputType);
 
         fragment.show(fragmentManager, String.valueOf(id));
