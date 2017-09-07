@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 
 /**
- * Created by ivan on 9/6/2017.
+ * Builder for MvpMessageBoxPresenter class
  */
 
 public class MvpMessageBoxBuilder {

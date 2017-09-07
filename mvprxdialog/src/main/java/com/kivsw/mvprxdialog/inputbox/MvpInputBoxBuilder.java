@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.InputType;
 
 /**
- * Created by ivan on 9/6/2017.
+ * Builder for MvpInputBoxPresenter class
  */
 
 public class MvpInputBoxBuilder {

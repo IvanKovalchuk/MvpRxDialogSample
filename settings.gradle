@@ -1,1 +1,1 @@
-include ':app', ':mvprxdialog'
+include ':app', ':mvprxdialog', ':cloud_disk', ':mvprxfiledialog'

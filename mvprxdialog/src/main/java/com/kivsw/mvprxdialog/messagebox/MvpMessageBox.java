@@ -18,8 +18,7 @@ import com.kivsw.mvprxdialog.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MvpMessageBox#newInstance} factory method to
- * create an instance of this fragment.
+ * do not create an instance of this fragment, use MvpMessageBoxPresenter instead
  */
 public class MvpMessageBox extends BaseMvpFragment {
 

@@ -16,9 +16,7 @@ import com.kivsw.mvprxdialog.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * Use the {@link MvpInputBox#newInstance} factory method to
- * create an instance of this fragment.
+ * do not create an instance of this fragment, use MvpInputBoxPresenter instead
  */
 public class MvpInputBox extends BaseMvpFragment {
 
