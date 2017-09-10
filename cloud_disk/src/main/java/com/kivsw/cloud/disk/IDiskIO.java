@@ -40,6 +40,7 @@ public interface IDiskIO {
       interface ResourceInfo{
           long size();
           boolean isFolder();
+          boolean isFile();
           String name();
           List<ResourceInfo> content(); // return
           long modified();

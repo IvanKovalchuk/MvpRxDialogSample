@@ -1,15 +1,22 @@
 package com.kivsw.mvprxdialogsample;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputType;
 
+import com.kivsw.cloud.disk.IDiskRepresenter;
+import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxPresenter;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
+import com.kivsw.mvprxfiledialog.MvpRxOpenFileDialogPresenter;
+
+import java.util.ArrayList;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
@@ -166,6 +173,38 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
                     }
                 });
+    }
+
+    public void  showFileOpen()
+    {
+        ArrayList<IDiskRepresenter> disks=new ArrayList();
+        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
+
+        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://")
+                .getMaybe()
+                .subscribe(new MaybeObserver<String>(){
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull String s) {
+                        view.showMessage(s);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
     }
 
 

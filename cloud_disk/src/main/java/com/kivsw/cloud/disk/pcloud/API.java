@@ -145,6 +145,11 @@ public class API {
         }
 
         @Override
+        public boolean isFile() {
+            return !isfolder;
+        }
+
+        @Override
         public String name() {
             return name;
         }

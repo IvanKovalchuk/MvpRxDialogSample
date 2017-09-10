@@ -22,7 +22,7 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
     private MvpInputBoxPresenter()
     {}
 
-    MvpInputBox view=null;
+    private MvpInputBox view=null;
     @Override
     public Contract.IView getUI() {
         return view;
@@ -47,8 +47,8 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
          boolean test(MvpInputBoxPresenter presenter, Editable value, StringBuilder errorString);
     }
 
-    MaybeEmitter<String> emmiter=null;
-    Maybe<String> maybe = Maybe.create(new MaybeOnSubscribe<String>() {
+    private MaybeEmitter<String> emmiter=null;
+    private Maybe<String> maybe = Maybe.create(new MaybeOnSubscribe<String>() {
         @Override
         public void subscribe(@NonNull MaybeEmitter<String> e) throws Exception {
             emmiter = e;

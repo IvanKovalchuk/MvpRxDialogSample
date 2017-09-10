@@ -6,7 +6,8 @@ import android.graphics.drawable.Drawable;
 import com.kivsw.cloud.disk.IDiskIO;
 
 /**
- * This interface represents a disk
+ * This interface represents a disk for UI components
+ *
  */
 
 public interface IDiskRepresenter {

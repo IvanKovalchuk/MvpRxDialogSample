@@ -46,12 +46,18 @@
             android:text="messageBox" />
 
         <Button
-            android:id="@+id/showInputBox"
+            android:id="@+id/showInputDialogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
             android:text="inputBox" />
 
+        <Button
+            android:id="@+id/showFileOpenDialogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:text="file open" />
 
     </LinearLayout>
 

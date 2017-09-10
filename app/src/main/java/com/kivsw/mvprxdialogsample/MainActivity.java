@@ -50,11 +50,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        Button showInputBox=(Button) findViewById(R.id.showInputBox);
+        Button showInputBox=(Button) findViewById(R.id.showInputDialogButton);
         showInputBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getPresenter().showInputBox();
+            }
+        });
+
+
+        Button showFileOpenButton = (Button) findViewById(R.id.showFileOpenDialogButton);
+        showFileOpenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPresenter().showFileOpen();
             }
         });
 

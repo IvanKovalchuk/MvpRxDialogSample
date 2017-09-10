@@ -1,114 +1,159 @@
 package com.kivsw.mvprxfiledialog;
 
-import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.kivsw.cloud.disk.IDiskIO;
+import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.BaseMvpFragment;
 import com.kivsw.mvprxdialog.Contract;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MvpRxFileDialog.OnFragmentInteractionListener} interface
- * to handle interaction events.
+ * This class is UI part for a fileDialog
  * Use the {@link MvpRxFileDialog#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class MvpRxFileDialog extends BaseMvpFragment
         implements Contract.IView
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
     public MvpRxFileDialog() {
         // Required empty public constructor
     }
 
+    static private final String CURRENT_PATH ="CURRENT_PATH";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param id of its presenter.
      * @return A new instance of fragment MvpRxFileDialog.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MvpRxFileDialog newInstance(String param1, String param2) {
+
+    public static MvpRxFileDialog newInstance(long id, Bitmap icon, String title) {
         MvpRxFileDialog fragment = new MvpRxFileDialog();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putLong(PRESENTER_ID, id);
+        //args.putString(CURRENT_PATH, currentPath);
+        args.putParcelable(ICON_PARAM,icon);
+        args.putString(TITLE_PARAM,title);
+
         fragment.setArguments(args);
         return fragment;
     }
 
+    private View rootView;
+    private TextView pathTextView, currentPath;
+    private EditText fileNameEdit;
+    private FileListView fileListView;
+    private ProgressBar progress;
+    private Button okButton, cancelButton;
+    private LinearLayout fileNameLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.file_dialog, container, false);
+        rootView= inflater.inflate(R.layout.file_dialog, container, false);
+
+        setupTitle(rootView);
+
+        pathTextView = (TextView) rootView.findViewById(R.id.currentPath);
+        fileNameEdit = (EditText) rootView.findViewById(R.id.editFileName);
+        fileListView = (FileListView) rootView.findViewById(R.id.fileList);
+        fileListView.setOnFileClick(new FileListView.OnFileClick(){
+            @Override
+            public void onFileClick(FileListView flf, IDiskIO.ResourceInfo fi, int position) {
+                ((MvpRxFileDialogPresenter)getPresenter()).onFileClick(fi, position);
+            }
+        });
+        fileListView.setOnDiskClick(new FileListView.OnDiskClick() {
+            @Override
+            public void onDiskClick(FileListView flf, IDiskRepresenter dsk, int position) {
+                ((MvpRxFileDialogPresenter)getPresenter()).onDiskClick(dsk, position);
+            }
+        });
+
+        fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
+
+        progress = (ProgressBar) rootView.findViewById(R.id.progressBar);
+
+        okButton = (Button)  rootView.findViewById(R.id.okButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MvpRxFileDialogPresenter)getPresenter()).onOkClick();
+            }
+        });
+
+        cancelButton = (Button)  rootView.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MvpRxFileDialogPresenter)getPresenter()).onCancelClick();
+            }
+        });
+        return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    public void setPath(String path)
+    {
+        pathTextView.setText(path);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
+    public void showProgress(boolean show)
+    {
+        if(show) progress.setVisibility(View.VISIBLE);
+        else progress.setVisibility(View.GONE);
+    }
+    public void showFileNameEdit(boolean show)
+    {
+        if(show) fileNameLayout.setVisibility(View.VISIBLE);
+        else fileNameLayout.setVisibility(View.GONE);
+    }
+    public void setFileList(List<IDiskIO.ResourceInfo> fileList)
+    {
+        fileListView.setFileList(fileList);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void setDiskList(List<IDiskRepresenter> disks)
+    {
+        fileListView.setDiskList(disks);
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public String getEditText()
+    {
+        return fileNameEdit.getText().toString();
     }
+    public void setEditText(String text)
+    {
+        fileNameEdit.setText(text);
+    }
+
+
+
+
+
+
 }

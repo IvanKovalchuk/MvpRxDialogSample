@@ -27,16 +27,6 @@ implements Contract.IView
        // setStyle(STYLE_NO_TITLE, getTheme());
     }
 
-    /**
-     * creates a presenter for this fragment
-     * if the fragment is not dialog, the method must return null and getPresenter() must be overridden
-     * @return a created presenter
-     */
-    protected Contract.IPresenter createPresenter()
-    {
-        return null;
-    };
-
     protected final static String PRESENTER_ID="presenterId";
     private long presenterId=0;
     private Contract.IDialogPresenter presenter=null;

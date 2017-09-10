@@ -146,6 +146,11 @@ public class API {
         }
 
         @Override
+        public boolean isFile() {
+            return !isFolder();
+        }
+
+        @Override
         public String name() {
             if(path.equals("disk:/")) // I suppose that Yandex service has a bug
                 return "/";           // it's workaround for the bug

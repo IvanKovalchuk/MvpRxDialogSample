@@ -157,7 +157,7 @@ public class LocalDiskIo implements IDiskIO {
     class LocalResourceInfo implements ResourceInfo
     {
         private long size, modified;
-        private boolean isFolder;
+        private boolean isFolder, isFile;
         private String name;
         private ArrayList<ResourceInfo> content;
 
@@ -176,6 +176,7 @@ public class LocalDiskIo implements IDiskIO {
 
                 size = f.length();
                 isFolder = f.isDirectory();
+                isFile = f.isFile();
                 name = f.getName();
                 modified = f.lastModified();
 
@@ -206,7 +207,10 @@ public class LocalDiskIo implements IDiskIO {
             public boolean isFolder() {
                 return isFolder;
             }
-
+        @Override
+        public boolean isFile() {
+            return isFile;
+        }
             @Override
             public String name() {
                 return name;
