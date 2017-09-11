@@ -1,13 +1,16 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.graphics.Bitmap;
+import android.support.design.widget.Snackbar;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -97,6 +100,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
         fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
 
         progress = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        //showProgress(false);
 
         okButton = (Button)  rootView.findViewById(R.id.okButton);
         okButton.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +118,16 @@ public class MvpRxFileDialog extends BaseMvpFragment
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width =  WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+
+        super.onResume();
     }
 
     public void setPath(String path)
@@ -150,10 +164,10 @@ public class MvpRxFileDialog extends BaseMvpFragment
     {
         fileNameEdit.setText(text);
     }
-
-
-
-
-
+    public void showMessage(String msg)
+    {
+        Snackbar.make(rootView, msg, Snackbar.LENGTH_LONG)
+                .show();
+    }
 
 }

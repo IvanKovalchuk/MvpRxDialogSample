@@ -26,50 +26,7 @@ package com.kivsw.mvprxfiledialog;
 class FileAdapter  extends BaseListAdapter
 {
 
-    /** creates FileInfor of ".."-directory
-     *
-     * @return
-     */
-    protected IDiskIO.ResourceInfo createColon()
-    {
-        IDiskIO.ResourceInfo ri=new IDiskIO.ResourceInfo(){
-            @Override
-            public long size() {
-                return 0;
-            }
 
-            @Override
-            public boolean isFolder() {
-                return true;
-            }
-
-            @Override
-            public boolean isFile() {
-                return false;
-            }
-
-            @Override
-            public String name() {
-                return "..";
-            }
-
-            @Override
-            public List<IDiskIO.ResourceInfo> content() {
-                return null;
-            }
-
-            @Override
-            public long modified() {
-                return 0;
-            }
-
-            @Override
-            public long created() {
-                return 0;
-            }
-        };
-        return ri;
-    }
 
     private boolean isAllowedDir=true, isAllowedFile=true, isAllowedHidden=true; // file type filter
     private ArrayList<Pattern> filters;  // file name filters
@@ -130,10 +87,11 @@ class FileAdapter  extends BaseListAdapter
     protected void updateFileList()
     {
         visibleFileList.clear();
+        if(fileList!=null)
         for(IDiskIO.ResourceInfo item:fileList)
         {
             if(checkFilter(item))
-                fileList.add(item);
+                visibleFileList.add(item);
         }
 
         Collections.sort(visibleFileList, new Comparator<IDiskIO.ResourceInfo>()

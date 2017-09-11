@@ -11,12 +11,13 @@ import java.util.ArrayList;
  */
 
 public abstract class BaseListAdapter implements ListAdapter {
-    private ArrayList<DataSetObserver> dataSetObservers;
+    private ArrayList<DataSetObserver> dataSetObservers = new ArrayList();
     protected Context context;
 
     public BaseListAdapter(Context cnt)
     {
         context = cnt;
+
     }
 
     @Override
