@@ -1,15 +1,12 @@
 package com.kivsw.mvprxfiledialog;
 
+import android.content.Context;
 import android.net.Uri;
-import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
-import com.kivsw.mvprxdialog.PresenterManager;
-import com.kivsw.mvprxdialog.messagebox.MvpMessageBox;
-import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +29,13 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
   /*  public enum TypeDialog {OPEN, SAVE, SELDIR}; // Action type of FileDialog
 
     private TypeDialog typeDialog;*/
-    private MvpRxFileDialog view=null;
+    protected Context context;
+    protected MvpRxFileDialog view=null;
     private List<IDiskRepresenter> disks;
     private List<IDiskIO.ResourceInfo> fileList=null, visibleFileList=null;
     private boolean progressVisible=true;
     private List<String> pathSegments;
-    private IDiskRepresenter currentDisk=null;
+    protected IDiskRepresenter currentDisk=null;
 
 
 
@@ -60,24 +58,37 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         setData();
     }
 
-    protected MvpRxFileDialogPresenter(List<IDiskRepresenter> disks, String path)
+    protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path)
     {
+        this.context = context.getApplicationContext();
         this.disks = disks;
         fileList = new ArrayList();
         visibleFileList = fileList;
-        Uri uri = Uri.parse(path);
-        String scheme=uri.getScheme();
-        pathSegments=new ArrayList(uri.getPathSegments());
 
+        if(path != null) {
+            Uri uri = Uri.parse(path);
+            String scheme = uri.getScheme();
+            pathSegments = new ArrayList(uri.getPathSegments());
+            currentDisk = getDisk(scheme);
+        }
+        else
+            pathSegments = new ArrayList();
+
+        if(currentDisk!=null)
+            updateDir(true);
+        else
+            selectDiskList();
+    };
+
+    protected IDiskRepresenter getDisk(String scheme)
+    {
         for(IDiskRepresenter dsk:disks)
             if(dsk.getScheme().equals(scheme))
             {
-                currentDisk=dsk;
-                break;
+                return dsk;
             }
-
-        updateDir(true);
-    };
+        return null;
+    }
 
     protected void setData()
     {
@@ -96,7 +107,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             if(fi.name().equals(".."))
             {
                 if(pathSegments.size()==0)
-                    selectDisk();
+                    selectDiskList();
                 else
                 {
                     pathSegments.remove(pathSegments.size()-1);
@@ -115,7 +126,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         }
     }
 
-    protected void selectDisk()
+    protected void selectDiskList()
     {
         view.setDiskList(disks);
     };
@@ -238,6 +249,31 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         return res.toString();
     };
 
+    /**
+     *
+     * @return only file name that EditText has
+     */
+    protected String getSelectedFile()
+    {
+        if(view==null)
+            return null;
+
+        String fileName = view.getEditText();
+        if(fileName==null || fileName.length()==0)
+            return null;
+        return fileName;
+    }
+
+    /**
+     *
+     * @return full name of the selected file (with disk name)
+     */
+    protected String getSelectedFullFileName()
+    {
+        String res=currentDisk.getScheme()+"://"+getCurrentDir() + getSelectedFile();
+        return res;
+    }
+
     public void onDiskClick(IDiskRepresenter dsk,  int position)
     {
         currentDisk = dsk;
@@ -257,12 +293,13 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         view.dismiss();
         super.deletePresenter();
         if(emmiter!=null)
-        emmiter.onComplete();
+            emmiter.onComplete();
     }
 
     public Maybe<String> getMaybe()
     {
         return maybe;
     }
+
 
 }

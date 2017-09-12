@@ -67,6 +67,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Button showFileSaveDialogButton = (Button) findViewById(R.id.showFileSaveDialogButton);
+        showFileSaveDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPresenter().showFileSave();
+            }
+        });
+
+        Button showChooseDirDialogButton = (Button) findViewById(R.id.showChooseDirDialogButton);
+        showChooseDirDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPresenter().showChooseDir();
+            }
+        });
+
     }
 
     @Override

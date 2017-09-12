@@ -18,9 +18,9 @@ import java.util.List;
 public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
     public static MvpRxSelectDirDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath)
     {
-        Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.icodir);
+        Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_folder);
         String title = context.getResources().getText(R.string.choose_directory).toString();
-        MvpRxSelectDirDialogPresenter presenter = new MvpRxSelectDirDialogPresenter(disks, defaultPath);
+        MvpRxSelectDirDialogPresenter presenter = new MvpRxSelectDirDialogPresenter(context, disks, defaultPath);
         long id= PresenterManager.getInstance().addNewPresenter(presenter);
 
         MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
@@ -30,9 +30,9 @@ public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
         return presenter;
     }
 
-    private MvpRxSelectDirDialogPresenter(List<IDiskRepresenter> disks, String path)
+    private MvpRxSelectDirDialogPresenter(Context context, List<IDiskRepresenter> disks, String path)
     {
-        super(disks, path);
+        super(context, disks, path);
     }
 
     public void onOkClick()

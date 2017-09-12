@@ -34,6 +34,5 @@ public abstract class BaseMvpPresenter
     protected void deletePresenter()
     {
             PresenterManager.getInstance().deletePresenter(getPresenterId());
-
     }
 }

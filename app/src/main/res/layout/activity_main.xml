@@ -49,15 +49,29 @@
             android:id="@+id/showInputDialogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
+            android:layout_gravity="center"
             android:text="inputBox" />
 
         <Button
             android:id="@+id/showFileOpenDialogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center"
-            android:text="file open" />
+            android:layout_gravity="center"
+            android:text="open file" />
+
+        <Button
+            android:id="@+id/showFileSaveDialogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="save file" />
+
+        <Button
+            android:id="@+id/showChooseDirDialogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="choose dir" />
 
     </LinearLayout>
 

@@ -15,6 +15,8 @@ import com.kivsw.mvprxdialog.inputbox.MvpInputBoxPresenter;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
 import com.kivsw.mvprxfiledialog.MvpRxOpenFileDialogPresenter;
+import com.kivsw.mvprxfiledialog.MvpRxSaveFileDialogPresenter;
+import com.kivsw.mvprxfiledialog.MvpRxSelectDirDialogPresenter;
 
 import java.util.ArrayList;
 
@@ -181,6 +183,68 @@ public class MainActivityPresenter implements Contract.IPresenter {
         disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
         MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://")
+                .getMaybe()
+                .subscribe(new MaybeObserver<String>(){
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull String s) {
+                        view.showMessage(s);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+    }
+    public void  showFileSave()
+    {
+        ArrayList<IDiskRepresenter> disks=new ArrayList();
+        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
+
+        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", "xxx")
+                .getMaybe()
+                .subscribe(new MaybeObserver<String>(){
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull String s) {
+                        view.showMessage(s);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+
+    }
+    public void  showChooseDir()
+    {
+        ArrayList<IDiskRepresenter> disks=new ArrayList();
+        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
+
+        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://")
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override

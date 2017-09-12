@@ -6,6 +6,7 @@ package com.kivsw.mvprxfiledialog;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.ImageView;
+        import android.widget.LinearLayout;
         import android.widget.TextView;
 
 
@@ -250,6 +251,7 @@ class FileAdapter  extends BaseListAdapter
         {
             TextView fileName, fileInfo;
             ImageView image;
+            LinearLayout linearLayout;
             int position;
         }
         ViewHolder viewHolder;
@@ -261,6 +263,7 @@ class FileAdapter  extends BaseListAdapter
             viewHolder.fileName = (TextView) convertView.findViewById(R.id.textViewFileName);
             viewHolder.fileInfo = (TextView) convertView.findViewById(R.id.textViewFileInfo);
             viewHolder.image = (ImageView) convertView.findViewById(R.id.imageView);
+            viewHolder.linearLayout = (LinearLayout)  convertView.findViewById(R.id.linearLayout);
             convertView.setTag(viewHolder);
         }
         else
@@ -271,7 +274,19 @@ class FileAdapter  extends BaseListAdapter
         {
             IDiskIO.ResourceInfo fi=visibleFileList.get(position);
 
-            // choose file/dir picture
+            // chooses background  colour
+            if((position&1)==0)
+            {
+                viewHolder.linearLayout.setBackgroundColor(0);
+            }
+            else
+            {
+                int color=viewHolder.fileName.getCurrentTextColor();
+                color = (color & 0x00FFFFFF) | 0x11000000;
+                viewHolder.linearLayout.setBackgroundColor(color);
+            }
+
+            // chooses file/dir picture
             if(fi.isFolder())
             {
                 if((position==0) && 0==fi.name().compareTo("..")) viewHolder.image.setImageResource(R.drawable.icodirup);
