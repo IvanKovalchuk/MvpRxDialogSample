@@ -23,6 +23,8 @@ class FileFilter {
      */
     public boolean isMask(String str)
     {
+        if(str==null || str.isEmpty())
+            return false;
         // str is a pattern in case it consists '*' or '?' symbols without the slash before
         int index;
         boolean r=false;

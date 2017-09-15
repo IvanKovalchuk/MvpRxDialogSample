@@ -7,6 +7,8 @@ import android.text.InputType;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
+import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
+import com.kivsw.cloud.disk.yandex.YandexRepresenter;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxPresenter;
@@ -176,10 +178,8 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     public void  showFileOpen()
     {
-        ArrayList<IDiskRepresenter> disks=new ArrayList();
-        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", null)
+        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -207,10 +207,8 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
     public void  showFileSave()
     {
-        ArrayList<IDiskRepresenter> disks=new ArrayList();
-        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", "xxx", "")
+        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", "", "xxx")
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -238,10 +236,9 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
     public void  showChooseDir()
     {
-        ArrayList<IDiskRepresenter> disks=new ArrayList();
-        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", null)
+
+        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -268,5 +265,14 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     }
 
+    ArrayList<IDiskRepresenter> getDisks()
+    {
+        ArrayList<IDiskRepresenter> disks=new ArrayList();
+        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
+        disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
+        disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
+
+        return disks;
+    }
 
 }

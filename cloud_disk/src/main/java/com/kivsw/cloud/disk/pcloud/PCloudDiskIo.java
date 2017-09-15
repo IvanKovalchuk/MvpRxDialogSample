@@ -95,6 +95,9 @@ public class PCloudDiskIo extends BaseDiskIO {
 
     protected Single<API.MetadataContainer> getFolderInfo(String path)
     {
+        if((path.length()>1) && (path.charAt(path.length()-1)=='/'))
+            path = path.substring(0, path.length()-1);
+
         return
         requests.requestListFolder(tokenKeeper.getToken(), path)//requestListRevisions(tokenKeeper.getToken(), path)
                         .subscribeOn(Schedulers.io());

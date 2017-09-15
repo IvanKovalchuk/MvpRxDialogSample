@@ -129,7 +129,7 @@ public class API {
         public int category; //    0 - uncategorized    1 - image    2 - video    3 - audio    4 - document    5 - archive
         public long size; // only for a file
         public String contenttype;
-        public long hash;
+        public String hash;
         public List<Metadata> contents; // directory content
         public boolean isdeleted;
         public String path;

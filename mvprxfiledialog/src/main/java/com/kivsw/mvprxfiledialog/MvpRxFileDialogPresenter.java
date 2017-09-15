@@ -14,9 +14,7 @@ import java.util.List;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeOnSubscribe;
-import io.reactivex.Single;
 import io.reactivex.SingleObserver;
-import io.reactivex.SingleSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
@@ -112,6 +110,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         if(filter.isMask(mask))
         {
             filter.setMask(mask);
+            if(view!=null)
+                view.setEditText("");
             updateDir(false);
             return true;
         }
@@ -146,6 +146,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
     protected void selectDiskList()
     {
+        view.showProgress(false);
         view.setDiskList(disks);
     };
 
@@ -166,13 +167,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         final IDiskIO disk=currentDisk.getDiskIo();
 
         disk.authorizeIfNecessary()
-                .andThen(Single.just(""))
-                .flatMap(new Function<String, SingleSource<IDiskIO.ResourceInfo>>() {
-                    @Override
-                    public SingleSource<IDiskIO.ResourceInfo> apply(@NonNull String s) throws Exception {
-                        return disk.getResourceInfo(getCurrentDir());
-                    }
-                })
+                .andThen( disk.getResourceInfo(getCurrentDir() ) )
                 .map(new Function<IDiskIO.ResourceInfo, List<IDiskIO.ResourceInfo>>() {
                     @Override
                     public List<IDiskIO.ResourceInfo> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
