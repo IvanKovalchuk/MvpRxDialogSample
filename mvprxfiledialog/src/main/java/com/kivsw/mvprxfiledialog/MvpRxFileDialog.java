@@ -1,17 +1,15 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.graphics.Bitmap;
-import android.support.design.widget.Snackbar;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.design.widget.Snackbar;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,9 +19,7 @@ import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.BaseMvpFragment;
 import com.kivsw.mvprxdialog.Contract;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -38,7 +34,6 @@ public class MvpRxFileDialog extends BaseMvpFragment
         // Required empty public constructor
     }
 
-    static private final String CURRENT_PATH ="CURRENT_PATH";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -51,7 +46,6 @@ public class MvpRxFileDialog extends BaseMvpFragment
         MvpRxFileDialog fragment = new MvpRxFileDialog();
         Bundle args = new Bundle();
         args.putLong(PRESENTER_ID, id);
-        //args.putString(CURRENT_PATH, currentPath);
         args.putParcelable(ICON_PARAM,icon);
         args.putString(TITLE_PARAM,title);
 
@@ -83,6 +77,17 @@ public class MvpRxFileDialog extends BaseMvpFragment
 
         pathTextView = (TextView) rootView.findViewById(R.id.currentPath);
         fileNameEdit = (EditText) rootView.findViewById(R.id.editFileName);
+        fileNameEdit.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction()==KeyEvent.ACTION_UP) && (event.getKeyCode()==KeyEvent.KEYCODE_ENTER))
+                {
+                    ((MvpRxFileDialogPresenter)getPresenter()).onOkClick();
+                }
+                return false;
+            }
+        });
+
         fileListView = (FileListView) rootView.findViewById(R.id.fileList);
         fileListView.setOnFileClick(new FileListView.OnFileClick(){
             @Override

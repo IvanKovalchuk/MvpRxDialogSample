@@ -1,9 +1,7 @@
 package com.kivsw.mvprxdialogsample;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputType;
 
@@ -13,7 +11,6 @@ import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxPresenter;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
-import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
 import com.kivsw.mvprxfiledialog.MvpRxOpenFileDialogPresenter;
 import com.kivsw.mvprxfiledialog.MvpRxSaveFileDialogPresenter;
 import com.kivsw.mvprxfiledialog.MvpRxSelectDirDialogPresenter;
@@ -182,7 +179,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
         ArrayList<IDiskRepresenter> disks=new ArrayList();
         disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://")
+        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -213,7 +210,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
         ArrayList<IDiskRepresenter> disks=new ArrayList();
         disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", "xxx")
+        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", "xxx", "")
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -244,7 +241,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
         ArrayList<IDiskRepresenter> disks=new ArrayList();
         disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
 
-        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://")
+        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), disks, "file://", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override

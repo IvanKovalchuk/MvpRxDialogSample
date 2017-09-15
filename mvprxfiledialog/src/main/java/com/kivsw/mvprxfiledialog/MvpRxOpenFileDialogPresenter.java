@@ -16,12 +16,12 @@ import java.util.List;
 
 public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
 
-    public static MvpRxOpenFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath)
+    public static MvpRxOpenFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String mask)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.icodir);
         String title = context.getResources().getText(R.string.open_file).toString();
-        MvpRxOpenFileDialogPresenter presenter = new MvpRxOpenFileDialogPresenter(context, disks, defaultPath);
+        MvpRxOpenFileDialogPresenter presenter = new MvpRxOpenFileDialogPresenter(context, disks, defaultPath, mask);
         long id= PresenterManager.getInstance().addNewPresenter(presenter);
 
         MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
@@ -31,13 +31,17 @@ public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
         return presenter;
     }
 
-    private MvpRxOpenFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path)
+    private MvpRxOpenFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
     {
-        super(context, disks, path);
+        super(context, disks, path, mask);
     }
 
     public void onOkClick()
     {
+        if(setFileListFilter(getSelectedFile()))
+            return;
+
+
         emmiter.onSuccess(getSelectedFullFileName());
         deletePresenter();
 

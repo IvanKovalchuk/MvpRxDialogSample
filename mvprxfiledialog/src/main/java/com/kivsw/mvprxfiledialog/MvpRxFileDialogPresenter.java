@@ -36,8 +36,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     private boolean progressVisible=true;
     private List<String> pathSegments;
     protected IDiskRepresenter currentDisk=null;
-
-
+    protected FileFilter filter=new FileFilter();
 
     protected  MaybeEmitter<String> emmiter=null;
     protected Maybe<String> maybe = Maybe.create(new MaybeOnSubscribe<String>() {
@@ -55,10 +54,10 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     @Override
     public void setUI(Contract.IView view) {
         this.view = (MvpRxFileDialog)view;
-        setData();
+        setViewData();
     }
 
-    protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path)
+    protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
     {
         this.context = context.getApplicationContext();
         this.disks = disks;
@@ -73,6 +72,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         }
         else
             pathSegments = new ArrayList();
+
+        filter.setMask(mask);
 
         if(currentDisk!=null)
             updateDir(true);
@@ -90,14 +91,31 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         return null;
     }
 
-    protected void setData()
+    protected void setViewData()
     {
         if(view==null)
             return;
 
         view.setFileList(visibleFileList);
-        view.setPath(getCurrentDir());
+        view.setPath(getCurrentDir()+filter.getWildCard());
         view.showProgress(progressVisible);
+    }
+
+    /**
+     * set a filter for file List
+     * @param mask
+     * @return  false if mask is not a valid filter
+     *          TRUE otherwise
+     */
+    protected boolean setFileListFilter(String mask)
+    {
+        if(filter.isMask(mask))
+        {
+            filter.setMask(mask);
+            updateDir(false);
+            return true;
+        }
+        return false;
     }
 
     public void onFileClick(IDiskIO.ResourceInfo fi, int position)
@@ -140,7 +158,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             visibleFileList.add(createUpdir());
         }
         progressVisible=true;
-        setData();
+        setViewData();
         if(updateDirDisposable!=null)
             updateDirDisposable.dispose();
         updateDirDisposable=null;
@@ -160,7 +178,10 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                     public List<IDiskIO.ResourceInfo> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
                         ArrayList<IDiskIO.ResourceInfo> list = new ArrayList<IDiskIO.ResourceInfo>();
                         list.add(createUpdir());
-                        list.addAll(resourceInfo.content());
+                        if(resourceInfo.content()!=null)
+                            list.addAll( filter.filterList(resourceInfo.content()) );
+                        else
+                            throw new Exception(context.getText(R.string.cant_read_dir).toString());
                         return list;
                     }
                 })
@@ -176,7 +197,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                         visibleFileList=fileList;
                         progressVisible=false;
 
-                        setData();
+                        setViewData();
 
                     }
 
@@ -187,12 +208,14 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                            view.showMessage(err);
                         progressVisible=false;
 
-                        setData();
+                        setViewData();
 
                         updateDirDisposable=null;
                     }
                 });
     };
+
+
     /** creates FileInfor of ".."-directory
      *
      * @return

@@ -25,6 +25,7 @@
     <string name="cant_create_file">"Не могу создать файл&#160; "</string>
     <string name="cant_delete_file">"Не могу удалить файл или каталог&#160;"</string>
     <string name="cant_rename_file">"Не могу переименовать файл или каталог&#160;"</string>
+    <string name="cant_read_dir">"Не могу прочитать каталог&#160;"</string>
     <string name="doYouWantToDeleteFile">Вы хотите удалить файл или каталог %s?</string>
 
 </resources>

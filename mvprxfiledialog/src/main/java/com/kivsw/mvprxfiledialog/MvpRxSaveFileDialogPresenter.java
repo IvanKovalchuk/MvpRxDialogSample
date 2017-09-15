@@ -3,7 +3,6 @@ package com.kivsw.mvprxfiledialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.disk.IDiskIO;
@@ -27,12 +26,12 @@ import io.reactivex.functions.Function;
  */
 
 public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
-    public static MvpRxSaveFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String defaultExt)
+    public static MvpRxSaveFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String mask, String defaultExt)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_save);
         String title = context.getResources().getText(R.string.save_file).toString();
-        MvpRxSaveFileDialogPresenter presenter = new MvpRxSaveFileDialogPresenter(context, disks,defaultPath, defaultExt);
+        MvpRxSaveFileDialogPresenter presenter = new MvpRxSaveFileDialogPresenter(context, disks,defaultPath, mask, defaultExt);
         long id= PresenterManager.getInstance().addNewPresenter(presenter);
 
         MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
@@ -42,10 +41,13 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
         return presenter;
     }
 
-    String defaultExt=null;
-    private MvpRxSaveFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String defaultExt)
+    private String defaultExt=null;
+
+
+    private MvpRxSaveFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask, String defaultExt)
     {
-        super(context, disks, path);
+        super(context, disks, path, mask);
+
         if(defaultExt!=null && defaultExt.length()>0) {
             if(defaultExt.charAt(0)=='.')  this.defaultExt = defaultExt;
             else                           this.defaultExt = '.'+defaultExt;
@@ -66,6 +68,10 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
 
     public void onOkClick()
     {
+        if(setFileListFilter(getSelectedFile()))
+            return;
+
+        // at first check whether the selected file exists
         final String fileName= getSelectedFile();
         if(fileName==null) return;
 
@@ -74,13 +80,13 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
 
         view.showProgress(true);
 
-        currentDisk.getDiskIo().getResourceInfo(filePath)
+        currentDisk.getDiskIo().getResourceInfo(filePath) // read dir content
                 .flatMap(new Function<IDiskIO.ResourceInfo, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
                         view.showProgress(false);
 
-                        boolean fileExists=false;
+                        boolean fileExists=false; // looks for the selected file
                         for(IDiskIO.ResourceInfo file:resourceInfo.content())
                         {
                             if(file.name().equals(fileName))
