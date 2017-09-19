@@ -3,8 +3,6 @@ package com.kivsw.mvprxdialog.messagebox;
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 
-import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
-
 /**
  * Builder for MvpMessageBoxPresenter class
  */
@@ -50,7 +48,10 @@ public class MvpMessageBoxBuilder {
         this.okTitle = text;
         return this;
     }
-
+    public MvpMessageBoxBuilder setOkButton(CharSequence text)
+    {
+        return setOkButton(text.toString());
+    }
     /**
      * controls Cancel button
      * @return
@@ -70,7 +71,10 @@ public class MvpMessageBoxBuilder {
         this.cancelTitle = text;
         return this;
     }
-
+    public MvpMessageBoxBuilder setCancelButton(CharSequence text)
+    {
+        return setCancelButton(text.toString());
+    }
     /**
      * controls Extra button
      * @return
@@ -100,7 +104,10 @@ public class MvpMessageBoxBuilder {
         this.msg = msg;
         return this;
     }
-
+    public MvpMessageBoxBuilder setText(CharSequence title, CharSequence msg)
+    {
+        return setText(title.toString(), msg.toString());
+    }
     public MvpMessageBoxBuilder setShowDontAskAgain(boolean show)
     {
         this.askDontShowAgain = show;

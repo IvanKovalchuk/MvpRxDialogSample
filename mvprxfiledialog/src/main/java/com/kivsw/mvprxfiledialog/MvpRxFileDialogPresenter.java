@@ -7,10 +7,19 @@ import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
+import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
+import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
+import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeOnSubscribe;
@@ -52,7 +61,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     @Override
     public void setUI(Contract.IView view) {
         this.view = (MvpRxFileDialog)view;
-        setViewData();
+        setViewData(null);
     }
 
     protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
@@ -74,7 +83,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         filter.setMask(mask);
 
         if(currentDisk!=null)
-            updateDir(true);
+            updateDir(true, null);
         else
             selectDiskList();
     };
@@ -89,7 +98,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         return null;
     }
 
-    protected void setViewData()
+    protected void setViewData(String itemToPos)
     {
         if(view==null)
             return;
@@ -97,6 +106,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         view.setFileList(visibleFileList);
         view.setPath(getCurrentDir()+filter.getWildCard());
         view.showProgress(progressVisible);
+
+        if(itemToPos!=null)
+            view.scrollToItem(itemToPos);
     }
 
     /**
@@ -112,13 +124,13 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             filter.setMask(mask);
             if(view!=null)
                 view.setEditText("");
-            updateDir(false);
+            updateDir(false, null);
             return true;
         }
         return false;
     }
 
-    public void onFileClick(IDiskIO.ResourceInfo fi, int position)
+    public void onFileClick(IDiskIO.ResourceInfo fi)
     {
         if(fi.isFolder())
         {
@@ -128,14 +140,14 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                     selectDiskList();
                 else
                 {
-                    pathSegments.remove(pathSegments.size()-1);
-                    updateDir(true);
+                    String dir= pathSegments.remove(pathSegments.size()-1);
+                    updateDir(true, dir);
                 }
             }
             else
             {
                 pathSegments.add(fi.name());
-                updateDir(true);
+                updateDir(true, null);
             }
         }
         else
@@ -144,22 +156,155 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         }
     }
 
+    public void onDeleteFileClick(final IDiskIO.ResourceInfo fi)
+    {
+        String  title = context.getText(R.string.Confirmation).toString(),
+                msg = String.format(Locale.US, context.getText(R.string.doYouWantToDeleteFile).toString(), fi.name());
+
+        MvpMessageBoxBuilder.newInstance()
+                .setText(title, msg)
+                .setShowDontAskAgain(false)
+                .setOkButton(context.getText(android.R.string.yes))
+                .setCancelButton(context.getText(android.R.string.no))
+                .build(view.getFragmentManager())
+                .getSingle()
+
+                .flatMapCompletable(new Function<Integer, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(@NonNull Integer button) throws Exception {
+                        if(button.intValue() == MvpMessageBoxPresenter.OK_BUTTON) {
+                            if(fi.isFolder())
+                                return currentDisk.getDiskIo().deleteDir(getCurrentDir()+fi.name());
+                            else
+                                return currentDisk.getDiskIo().deleteFile(getCurrentDir()+fi.name());
+                        }
+                        else
+                            return Completable.complete();
+                    }
+                })
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) { }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        view.showMessage(e.toString());
+                        view.showProgress(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        view.showProgress(false);
+                        updateDir(false,null);
+                    }
+                });
+    }
+    public void onRenameClick(final IDiskIO.ResourceInfo fi)
+    {
+        final StringBuilder name=new StringBuilder();
+        String title;
+        if(fi.isFolder()) title = context.getText(R.string.enter_dir_name).toString();
+        else  title = context.getText(R.string.enter_file_name).toString();
+
+        MvpInputBoxBuilder.newInstance()
+                .setText(title, "")
+                .setInitialValue(fi.name())
+                .build(view.getFragmentManager())
+                .getMaybe()
+                .flatMapCompletable(new Function<String, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(@NonNull String newName) throws Exception {
+                        view.showProgress(true);
+                        String  oldName=getCurrentDir()+fi.name();
+                        newName=getCurrentDir()+newName;
+                        name.append(newName);
+                        if(fi.isFolder())  return currentDisk.getDiskIo().renameDir(oldName, newName);
+                         else   return currentDisk.getDiskIo().renameFile(oldName, newName);
+                    }
+                })
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) { }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        view.showMessage(e.toString());
+                        view.showProgress(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        view.showProgress(false);
+                        updateDir(false, name.toString());
+                    }
+                });
+    }
+
+    public void onCreateDirClick()
+    {
+        final StringBuilder name=new StringBuilder();
+
+        MvpInputBoxBuilder.newInstance()
+                .setText(context.getText(R.string.enter_dir_name), context.getText(R.string.create_dir))
+                .build(view.getFragmentManager())
+                .getMaybe()
+                .flatMapCompletable(new Function<String, Completable>() {
+                    @Override
+                    public Completable apply(@NonNull String newDir) throws Exception {
+
+                        name.append(newDir);
+                        view.showProgress(true);
+                        return  currentDisk.getDiskIo().createDir(getCurrentDir()+newDir);
+                    }
+                })
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) { }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        view.showMessage(e.toString());
+                        view.showProgress(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        view.showProgress(false);
+                        updateDir(false, name.toString());
+                    }
+                });
+    }
+
+    public void onBackPressed()
+    {
+        if(diskListVisible)
+            deletePresenter(); // closes dialog
+        else
+            onFileClick(createUpdir()); // goes to the updir
+
+    }
+
+    private boolean diskListVisible=false;
     protected void selectDiskList()
     {
         view.showProgress(false);
         view.setDiskList(disks);
+        diskListVisible=true;
     };
 
     private Disposable updateDirDisposable=null;
-    protected void updateDir(boolean cleanContext)
+    protected void updateDir(boolean cleanContext, final String itemToPos)
     {
+        diskListVisible=false;
 
         if(cleanContext) {
             visibleFileList.clear();
             visibleFileList.add(createUpdir());
+
         }
+
         progressVisible=true;
-        setViewData();
+        setViewData(itemToPos);
         if(updateDirDisposable!=null)
             updateDirDisposable.dispose();
         updateDirDisposable=null;
@@ -177,6 +322,24 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                             list.addAll( filter.filterList(resourceInfo.content()) );
                         else
                             throw new Exception(context.getText(R.string.cant_read_dir).toString());
+
+                        Collections.sort(list, new Comparator<IDiskIO.ResourceInfo>()
+                        {
+                            @Override
+                            public int compare(IDiskIO.ResourceInfo lhs, IDiskIO.ResourceInfo rhs) {
+
+                                int r=0;
+                                if(lhs.isFolder()==rhs.isFolder())
+                                    r= lhs.name().compareToIgnoreCase(rhs.name());
+                                else
+                                {
+                                    if(lhs.isFolder()) r=-1;
+                                    else r=1;
+                                }
+                                return r;
+                            }
+                        });
+
                         return list;
                     }
                 })
@@ -192,7 +355,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                         visibleFileList=fileList;
                         progressVisible=false;
 
-                        setViewData();
+                        setViewData(itemToPos);
 
                     }
 
@@ -203,7 +366,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                            view.showMessage(err);
                         progressVisible=false;
 
-                        setViewData();
+                        setViewData(itemToPos);
 
                         updateDirDisposable=null;
                     }
@@ -296,7 +459,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     {
         currentDisk = dsk;
         pathSegments.clear();
-        updateDir(true);
+        updateDir(true,null);
     }
 
     public abstract void onOkClick();

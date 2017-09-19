@@ -100,7 +100,8 @@ public class PCloudDiskIo extends BaseDiskIO {
 
         return
         requests.requestListFolder(tokenKeeper.getToken(), path)//requestListRevisions(tokenKeeper.getToken(), path)
-                        .subscribeOn(Schedulers.io());
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
 
     }
     protected Single<API.MetadataContainer> getRenameFile(String path, String newPath) {
@@ -113,7 +114,8 @@ public class PCloudDiskIo extends BaseDiskIO {
                             public API.MetadataContainer apply(API.MetadataContainer disk) throws Exception{// TODO transforming data format
                                 return disk;
                             }
-                        });
+                        })
+                        .observeOn(AndroidSchedulers.mainThread());
 
     }
 
@@ -156,6 +158,7 @@ public class PCloudDiskIo extends BaseDiskIO {
                         return metadataContainer.metadata;
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .toCompletable();
     }
 
@@ -173,6 +176,7 @@ public class PCloudDiskIo extends BaseDiskIO {
                         return metadataContainer.metadata;
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .toCompletable();
     }
 
@@ -188,6 +192,7 @@ public class PCloudDiskIo extends BaseDiskIO {
                                 return metadataContainer.metadata;
                             }
                         })
+                        .observeOn(AndroidSchedulers.mainThread())
                         .toCompletable();
     }
 
@@ -202,6 +207,7 @@ public class PCloudDiskIo extends BaseDiskIO {
                         return res;
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .toCompletable();
     }
 
@@ -216,6 +222,7 @@ public class PCloudDiskIo extends BaseDiskIO {
                         return res.metadata;
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .toCompletable();
     }
 

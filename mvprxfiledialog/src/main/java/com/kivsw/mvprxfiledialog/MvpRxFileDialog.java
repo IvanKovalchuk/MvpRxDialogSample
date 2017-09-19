@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -28,7 +29,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MvpRxFileDialog extends BaseMvpFragment
-        implements Contract.IView
+        implements FileListView.OnFileMenuItemClick, Contract.IView
 {
     public MvpRxFileDialog() {
         // Required empty public constructor
@@ -92,7 +93,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
         fileListView.setOnFileClick(new FileListView.OnFileClick(){
             @Override
             public void onFileClick(FileListView flf, IDiskIO.ResourceInfo fi, int position) {
-                ((MvpRxFileDialogPresenter)getPresenter()).onFileClick(fi, position);
+                ((MvpRxFileDialogPresenter)getPresenter()).onFileClick(fi);
             }
         });
         fileListView.setOnDiskClick(new FileListView.OnDiskClick() {
@@ -101,6 +102,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
                 ((MvpRxFileDialogPresenter)getPresenter()).onDiskClick(dsk, position);
             }
         });
+        fileListView.setOnMenuItemClickListener(this);
 
         fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
 
@@ -122,6 +124,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
                 ((MvpRxFileDialogPresenter)getPresenter()).onCancelClick();
             }
         });
+
         return rootView;
     }
 
@@ -135,12 +138,28 @@ public class MvpRxFileDialog extends BaseMvpFragment
         super.onResume();
     }
 
+    @Override
+    public boolean onBackPressed()
+    {
+        ((MvpRxFileDialogPresenter) getPresenter()).onBackPressed();
+        return true;
+    }
+
     public void setPath(String path)
     {
         pathTextView.setText(path);
     }
 
-
+    public void scrollToItem(String fileName)
+    {
+        int pos=fileListView.getItemPosition(fileName);
+        int p=fileListView.getVerticalScrollbarPosition();
+        int f=fileListView.getFirstVisiblePosition();
+        if(pos >=0 )
+            fileListView.//setVerticalScrollbarPosition(pos);
+            //smoothScrollToPosition(pos);
+        setSelection(pos);
+    }
     public void showProgress(boolean show)
     {
         if(show) progress.setVisibility(View.VISIBLE);
@@ -175,4 +194,31 @@ public class MvpRxFileDialog extends BaseMvpFragment
                 .show();
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item, IDiskIO.ResourceInfo resource) {
+        int itemId=item.getItemId();
+
+        /*if(itemId==R.id.itemcreatefile) {
+            ((MvpRxFileDialogPresenter) getPresenter()).onCreateFileClick();
+            return true;
+        }
+        else */
+        if(itemId==R.id.itemcreatedirectory) {
+            ((MvpRxFileDialogPresenter) getPresenter()).onCreateDirClick();
+            return true;
+        }
+        else if(itemId==R.id.itemdelete)
+        {
+            ((MvpRxFileDialogPresenter) getPresenter()).onDeleteFileClick(resource);
+            return true;
+        }
+        else if(itemId==R.id.itemrename)
+        {
+
+            ((MvpRxFileDialogPresenter) getPresenter()).onRenameClick(resource);
+            return true;
+        }
+
+        return false;
+    }
 }

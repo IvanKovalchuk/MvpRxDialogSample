@@ -4,11 +4,15 @@ package com.kivsw.mvprxfiledialog;
 */
 
 
+import android.content.Context;
+import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.content.Context;
 
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
@@ -17,8 +21,10 @@ import java.util.List;
 
 
 public class FileListView extends ListView
-        implements AdapterView.OnItemClickListener
+        implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener
 {
+
+
     // interface for notification of directory change and a clicked file
     interface OnFileClick
     {
@@ -30,11 +36,15 @@ public class FileListView extends ListView
         void onDiskClick(FileListView flf, IDiskRepresenter fi, int position);
     };
 
+    interface OnFileMenuItemClick
+    {
+        boolean onMenuItemClick(MenuItem item, IDiskIO.ResourceInfo resource);
+    }
 
-    FileAdapter fileAdapter;
-    DiskRepresenterAdapter diskAdapter;
 
-
+    private FileAdapter fileAdapter;
+    private DiskRepresenterAdapter diskAdapter;
+    private OnFileMenuItemClick onMenuItemClickListener;
     private OnFileClick  onFileClick=null;
     private OnDiskClick onDiskClick=null;
 
@@ -55,6 +65,9 @@ public class FileListView extends ListView
         this.onFileClick = onFileClick;
     }
 
+    public void setOnMenuItemClickListener(OnFileMenuItemClick onMenuItemClickListener) {
+        this.onMenuItemClickListener = onMenuItemClickListener;
+    }
 
     //-------------------------------------------------------
     public FileListView(Context context) {
@@ -78,9 +91,49 @@ public class FileListView extends ListView
 
         setItemsCanFocus(true);
         setOnItemClickListener(this);
+        setOnItemLongClickListener(this);
+        setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onKeyUp(KeyEvent.KEYCODE_MENU,  new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MENU));
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode,  KeyEvent event)
+    {
+        if( (getAdapter()==fileAdapter) &&
+             (event.getAction()==KeyEvent.ACTION_UP) &&
+                (keyCode==KeyEvent.KEYCODE_MENU))
+        {
+
+            PopupMenu popup = new PopupMenu(getContext(), this);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.filelist_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    if(onMenuItemClickListener!=null)
+                        return onMenuItemClickListener.onMenuItemClick(item, null);
+                    return false;
+                }
+            });
+            popup.show();
+
+            return true;
+        }
+        return false;
+    };
+
+    public List<IDiskIO.ResourceInfo> getFileList()
+    {
+        return fileAdapter.getData();
     }
     public void setFileList(List<IDiskIO.ResourceInfo> fileList)
     {
+
         if(getAdapter()!=fileAdapter)
              setAdapter(fileAdapter);
         fileAdapter.setData(fileList);
@@ -92,7 +145,10 @@ public class FileListView extends ListView
         diskAdapter.setData(diskList);
     }
 
-
+    public int getItemPosition(String itemName)
+    {
+        return fileAdapter.getDirPosition(itemName);
+    }
     //--------------------------------------------------------
     // implements AdapterView.OnItemClickListener
     // Processes a click on a file or directory
@@ -111,42 +167,32 @@ public class FileListView extends ListView
             if(onDiskClick!=null) onDiskClick.onDiskClick(this, dsk, position);
         }
 
-   /*     FileAdapter.FileInfo fi=(FileAdapter.FileInfo)fileAdapter.getItem(position);
+    }
 
-        if(fi.isDir)
-        {
-            String NewPath="", SelDir=null;
-            if(0==fi.name.compareTo(".."))  // go to the upper directory
-            {
-                String Path = getPath();
-                int i=0;
-                i=Path.lastIndexOf("/",Path.length()-2);
-                if(i>=0)
-                    NewPath = Path.substring(0,i);
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if(getAdapter()!=fileAdapter)
+            return false;
 
-                SelDir = Path.substring(i+1, Path.length()-1);
-            }
-            else
-                NewPath=getPath()+fi.name; // go to the chosen directory
+        final IDiskIO.ResourceInfo resource = fileAdapter.getData().get(position);
 
-            if(setPath(NewPath))
-            {
-                if(SelDir!=null && SelDir.length()>0)
-                {
-                    int p= fileAdapter.getDirPosition(SelDir);
-                    if(p>=0)
-                        setSelection(p);
+        PopupMenu popup = new PopupMenu(getContext(), view);
+        MenuInflater inflater = popup.getMenuInflater();
+        if(resource.name().equals("..")) inflater.inflate(R.menu.filelist_menu, popup.getMenu());
+            else                         inflater.inflate(R.menu.file_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if(onMenuItemClickListener!=null) {
+
+                    return onMenuItemClickListener.onMenuItemClick(item, resource);
                 }
-                else
-                    setSelection(0);
+                return false;
             }
+        });
+        popup.show();
 
-        }
-        else
-        {
-            if(onDiskClick!=null) onDiskClick.onDiskClick(this,fi);
-        }*/
-
+        return true;
     }
     //----------------------------------------------------------------------------------
 

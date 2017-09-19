@@ -63,7 +63,15 @@ implements Contract.IView
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+
+        //return super.onCreateDialog(savedInstanceState);
+        return  new Dialog(getActivity(), getTheme()){
+            public void onBackPressed() {
+                if(!BaseMvpFragment.this.onBackPressed())
+                    super.onBackPressed();
+                }
+            };
+
     }
 
     @Override
@@ -128,24 +136,14 @@ implements Contract.IView
         headerTextView.setText(Html.fromHtml(getArguments().getString(TITLE_PARAM)));
     }
 
-
-
- /*   @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    /**
+     * when user presses back button
+     * @return
+     */
+    public boolean onBackPressed() {
+        return false;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }*/
 
 
 }

@@ -179,7 +179,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     public void  showFileOpen()
     {
 
-        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", null)
+        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -208,7 +208,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     public void  showFileSave()
     {
 
-        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", "", "xxx")
+        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///", "", "xxx")
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -238,7 +238,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     {
 
 
-        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://", null)
+        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///storage/emulated/0", null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override

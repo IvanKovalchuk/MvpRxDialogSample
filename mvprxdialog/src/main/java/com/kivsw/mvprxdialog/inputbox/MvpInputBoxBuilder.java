@@ -31,7 +31,10 @@ public class MvpInputBoxBuilder {
         this.msg = msg;
         return this;
     }
-
+    public MvpInputBoxBuilder setText(CharSequence title, CharSequence msg)
+    {
+        return setText(title.toString(), msg.toString());
+    }
     public MvpInputBoxBuilder setInitialValue(String value)
     {
         this.InputValue = value;
