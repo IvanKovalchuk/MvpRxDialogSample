@@ -61,14 +61,17 @@ public class OAuthActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        presenter.cancelOAuth();
+    }
+
     protected void processResult(String urlStr)
     {
         presenter.processRedirection(urlStr);
 
     }
-
-
-
 
 
     static public void showActivity(Context context)

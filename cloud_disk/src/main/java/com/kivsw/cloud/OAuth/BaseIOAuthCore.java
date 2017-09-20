@@ -49,9 +49,15 @@ public abstract class BaseIOAuthCore
                 paremeters.put(name, uri.getQueryParameter(name) );
 
             observable.onNext(this);
+            observable.onComplete();
             return true;
         }
         return false;
+    }
+    @Override
+    public void cancel()
+    {
+        observable.onError(new Exception(""));
     }
 
     @Override

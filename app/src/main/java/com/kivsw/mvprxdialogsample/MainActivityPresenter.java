@@ -2,11 +2,13 @@ package com.kivsw.mvprxdialogsample;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.InputType;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
+import com.kivsw.cloud.disk.localdisk.StorageUtils;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
 import com.kivsw.mvprxdialog.Contract;
@@ -237,8 +239,11 @@ public class MainActivityPresenter implements Contract.IPresenter {
     public void  showChooseDir()
     {
 
+        String dir = view.getCacheDir().getAbsolutePath();
+        String exDir=  view.getExternalCacheDir().getAbsolutePath();
+        String external = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///storage/emulated/0", null)
+        MvpRxSelectDirDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file://"+external, null)
                 .getMaybe()
                 .subscribe(new MaybeObserver<String>(){
                     @Override
@@ -268,7 +273,9 @@ public class MainActivityPresenter implements Contract.IPresenter {
     ArrayList<IDiskRepresenter> getDisks()
     {
         ArrayList<IDiskRepresenter> disks=new ArrayList();
-        disks.add(new LocalDiskRepresenter(view.getApplicationContext()));
+        disks.add(LocalDiskRepresenter.getLocalFS(view.getApplicationContext()));
+        /*disks.add(LocalDiskRepresenter.getExternalSD(view.getApplicationContext()));*/
+        disks.addAll(StorageUtils.getSD_list(view.getApplicationContext()));
         disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
         disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
 

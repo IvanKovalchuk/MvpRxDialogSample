@@ -48,6 +48,11 @@ public class OAuthPresenter implements OAuthActivityContract.IPresenter {
     }
 
     @Override
+    public void cancelOAuth() {
+        core.cancel();
+    }
+
+    @Override
     public Observable<OAuthActivityContract.IOAuthCore> startAuthorization(OAuthActivityContract.IOAuthCore core) {
         this.core=core;
 

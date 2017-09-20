@@ -166,9 +166,9 @@ public class LocalDiskIo implements IDiskIO {
             {
                  this(path, true, false);
             }
-            protected LocalResourceInfo(String path, boolean contentList, boolean ignoreExistance) throws Exception
+            protected LocalResourceInfo(String devicePath, boolean contentList, boolean ignoreExistance) throws Exception
             {
-                path = correctPath(path);
+                String path = correctPath(devicePath);
 
                 File f = new File(path);
                 if(!f.exists() && !ignoreExistance)
@@ -192,10 +192,10 @@ public class LocalDiskIo implements IDiskIO {
                             if (item.equals(".") || item.equals(".."))
                                 continue;
                             try {
-                                content.add(new LocalResourceInfo(path + item, false,true));
+                                content.add(new LocalResourceInfo(devicePath + item, false,true));
                             }catch(Exception e)
                             {
-                                content.add(new LocalResourceInfo(path + item, false, true));
+                                content.add(new LocalResourceInfo(devicePath + item, false, true));
                             }
                         };
                     }

@@ -16,6 +16,7 @@ public interface OAuthActivityContract {
         String getOAuthURL();  // gets startAuthorization url
 
         boolean processRedirection(String url); // returns true if startAuthorization finished
+        void cancel();
         Observable<IOAuthCore> getObservable();
     }
 
@@ -40,6 +41,7 @@ public interface OAuthActivityContract {
 
         String getOAuthURL();
         void processRedirection(String url);
+        void cancelOAuth();
 
         Observable<IOAuthCore> startAuthorization(IOAuthCore core);
 
