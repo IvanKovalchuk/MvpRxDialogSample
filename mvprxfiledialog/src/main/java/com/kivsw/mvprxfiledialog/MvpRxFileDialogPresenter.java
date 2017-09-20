@@ -23,7 +23,9 @@ import io.reactivex.CompletableSource;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeOnSubscribe;
+import io.reactivex.Single;
 import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
@@ -105,7 +107,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
         view.setFileList(visibleFileList);
         view.setPath(getCurrentDir()+filter.getWildCard());
+        view.setDisk(currentDisk);
         view.showProgress(progressVisible);
+
 
         if(itemToPos!=null)
             view.scrollToItem(itemToPos);
@@ -312,7 +316,13 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         final IDiskIO disk=currentDisk.getDiskIo();
 
         disk.authorizeIfNecessary()
-                .andThen( disk.getResourceInfo(getCurrentDir() ) )
+                .andThen(Single.just("") )
+                .flatMap(new Function<String, SingleSource<IDiskIO.ResourceInfo>>() {
+                    @Override
+                    public SingleSource<IDiskIO.ResourceInfo> apply(@NonNull String s) throws Exception {
+                        return disk.getResourceInfo(getCurrentDir() );
+                    }
+                })
                 .map(new Function<IDiskIO.ResourceInfo, List<IDiskIO.ResourceInfo>>() {
                     @Override
                     public List<IDiskIO.ResourceInfo> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {

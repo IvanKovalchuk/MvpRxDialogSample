@@ -24,7 +24,7 @@ implements Contract.IView
     private ImageView headerIcon=null;
 
     public BaseMvpFragment() {
-       // setStyle(STYLE_NO_TITLE, getTheme());
+        setStyle(STYLE_NO_TITLE, getTheme());
     }
 
     protected final static String PRESENTER_ID="presenterId";

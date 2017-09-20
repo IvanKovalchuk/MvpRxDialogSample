@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,12 +56,14 @@ public class MvpRxFileDialog extends BaseMvpFragment
     }
 
     private View rootView;
-    private TextView pathTextView, currentPath;
+    private TextView pathTextView, diskTextView;
     private EditText fileNameEdit;
     private FileListView fileListView;
     private ProgressBar progress;
     private Button okButton, cancelButton;
-    private LinearLayout fileNameLayout;
+    private LinearLayout fileNameLayout, pathLayout;
+    private LinearLayout diskLayout;
+    private ImageView diskImageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,6 +108,11 @@ public class MvpRxFileDialog extends BaseMvpFragment
         fileListView.setOnMenuItemClickListener(this);
 
         fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
+        pathLayout = (LinearLayout) rootView.findViewById(R.id.pathLayout);
+
+        diskLayout = (LinearLayout)  rootView.findViewById(R.id.diskLayout);
+        diskImageView = (ImageView)    rootView.findViewById(R.id.diskImageView);
+        diskTextView = (TextView)    rootView.findViewById(R.id.diskTextView);
 
         progress = (ProgressBar) rootView.findViewById(R.id.progressBar);
         //showProgress(false);
@@ -149,6 +157,13 @@ public class MvpRxFileDialog extends BaseMvpFragment
     {
         pathTextView.setText(path);
     }
+    public void setDisk(IDiskRepresenter disk)
+    {
+
+        diskImageView.setImageBitmap(disk.getIcon());
+        diskTextView.setText(disk.getName());
+
+    }
 
     public void scrollToItem(String fileName)
     {
@@ -172,11 +187,15 @@ public class MvpRxFileDialog extends BaseMvpFragment
     }
     public void setFileList(List<IDiskIO.ResourceInfo> fileList)
     {
+        pathLayout.setVisibility(View.VISIBLE);
+        diskLayout.setVisibility(View.VISIBLE);
         fileListView.setFileList(fileList);
     }
 
     public void setDiskList(List<IDiskRepresenter> disks)
     {
+        pathLayout.setVisibility(View.GONE);
+        diskLayout.setVisibility(View.GONE);
         fileListView.setDiskList(disks);
     }
 

@@ -7,7 +7,6 @@ import android.text.Editable;
 import android.text.InputType;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
-import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.StorageUtils;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
@@ -273,7 +272,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     ArrayList<IDiskRepresenter> getDisks()
     {
         ArrayList<IDiskRepresenter> disks=new ArrayList();
-        disks.add(LocalDiskRepresenter.getLocalFS(view.getApplicationContext()));
+        //disks.add(LocalDiskRepresenter.getLocalFS(view.getApplicationContext()));
         /*disks.add(LocalDiskRepresenter.getExternalSD(view.getApplicationContext()));*/
         disks.addAll(StorageUtils.getSD_list(view.getApplicationContext()));
         disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));

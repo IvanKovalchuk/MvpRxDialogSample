@@ -128,17 +128,24 @@ public class StorageUtils {
         };
     }
 
+    /**
+     *
+     * @param context
+     * @return all the storage devices of the device
+     */
     public static List<IDiskRepresenter> getSD_list(Context context)
     {
         String[] paths=getStorageDirectories(context);
         ArrayList<IDiskRepresenter> res=new ArrayList();
         Bitmap bmp=BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd);
 
+        res.add(new LocalDiskRepresenter(context));
+
         for(String path:paths)
         {
             LocalDiskIo disk = new LocalDiskIo(path);
             String segments[]=path.split(File.pathSeparator);
-            LocalDiskRepresenter representer = new LocalDiskRepresenter(context, disk, "sd_"+segments[segments.length-1], "sd ("+path+")", bmp);
+            LocalDiskRepresenter representer = new LocalDiskRepresenter(context, disk, "sd_"+segments[segments.length-1], "SD ("+path+")", bmp);
             res.add(representer);
         }
 
