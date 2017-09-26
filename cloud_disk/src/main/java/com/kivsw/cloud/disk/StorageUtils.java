@@ -1,13 +1,15 @@
-package com.kivsw.cloud.disk.localdisk;
+package com.kivsw.cloud.disk;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 
-import com.kivsw.cloud.disk.IDiskRepresenter;
+import com.kivsw.cloud.disk.localdisk.LocalDiskIo;
+import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 import com.kivsw.cloud_disk.R;
 
 import java.io.File;
@@ -144,11 +146,40 @@ public class StorageUtils {
         for(String path:paths)
         {
             LocalDiskIo disk = new LocalDiskIo(path);
-            String segments[]=path.split(File.pathSeparator);
+            String segments[]=path.split(File.separator);
             LocalDiskRepresenter representer = new LocalDiskRepresenter(context, disk, "sd_"+segments[segments.length-1], "SD ("+path+")", bmp);
             res.add(representer);
         }
 
         return res;
+    }
+
+    static public class CloudFile
+    {
+        public IDiskRepresenter diskRepresenter;
+        public Uri uri;
+        public String getPath(){return uri.getPath();}
+    }
+
+    public static CloudFile parseFileName(String path, List<IDiskRepresenter> disks)
+    {
+        CloudFile cf=new CloudFile();
+        Uri uri = Uri.parse(path);
+        String scheme = uri.getScheme();
+        //pathSegments = new ArrayList(uri.getPathSegments());
+
+        cf.uri = uri;
+        cf.diskRepresenter = findDisk( scheme, disks);
+        return cf;
+
+    }
+    public static IDiskRepresenter findDisk(String scheme, List<IDiskRepresenter> disks)
+    {
+        for(IDiskRepresenter dsk:disks)
+            if(dsk.getScheme().equals(scheme))
+            {
+                return dsk;
+            }
+        return null;
     }
 }

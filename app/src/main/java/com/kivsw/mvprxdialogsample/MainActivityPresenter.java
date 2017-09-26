@@ -7,9 +7,11 @@ import android.text.Editable;
 import android.text.InputType;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
-import com.kivsw.cloud.disk.localdisk.StorageUtils;
+import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
+import com.kivsw.cloudcache.CacheFileInfo;
+import com.kivsw.cloudcache.CloudCache;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxPresenter;
@@ -22,6 +24,8 @@ import java.util.ArrayList;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
@@ -44,6 +48,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
 
     MainActivity view;
+    CloudCache fileCache;
 
     @Override
     public Contract.IView getUI() {
@@ -53,6 +58,9 @@ public class MainActivityPresenter implements Contract.IPresenter {
     @Override
     public void setUI(Contract.IView view) {
         this.view = (MainActivity)view;
+
+        if( this.view!=null)
+            fileCache = CloudCache.newInstance(this.view.getApplicationContext(),getDisks(), 1024*64, 5);
     }
 
     long presenter_id;
@@ -108,6 +116,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     public MainActivityPresenter() {
         //this.view = view;
+
     }
 
     public void showInputBox()
@@ -177,30 +186,56 @@ public class MainActivityPresenter implements Contract.IPresenter {
                 });
     }
 
+    private String ExtractFilePath(String path)
+    {
+        int l=path.lastIndexOf('/');
+        if(l<0) return null;
+        return path.substring(0,l);
+    }
+    String lastOpenDir=null;
     public void  showFileOpen()
     {
 
-        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///", null)
+        MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), lastOpenDir, null)
                 .getMaybe()
-                .subscribe(new MaybeObserver<String>(){
+                .flatMapObservable(new Function<String, ObservableSource<?>>() {
+                    @Override
+                    public ObservableSource<?> apply(@NonNull String filePath) throws Exception {
+                        lastOpenDir = ExtractFilePath(filePath);
+                        view.showMessage(filePath);
+                        return fileCache.getFileFromCache(filePath);
+                    }
+                })
+                .subscribe(new Observer(){
+
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onSuccess(@NonNull String s) {
-                        view.showMessage(s);
+                    public void onNext(@NonNull Object o) {
+                        if(view==null)
+                            return;
+                        if(o instanceof Number)
+                             view.showMessage(String.format("downloading %d %%", ((Number) o).intValue()) );
+                        if(o instanceof CacheFileInfo)
+                        {
+
+                            view.showMessage(((CacheFileInfo)o).localName);
+                        }
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
+                        if(view==null)
+                            return;
+                        view.showMessage(e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        //view.showMessage("download complete");
                     }
                 });
 
@@ -209,27 +244,41 @@ public class MainActivityPresenter implements Contract.IPresenter {
     public void  showFileSave()
     {
 
-        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), "file:///", "", "xxx")
+        MvpRxSaveFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), lastOpenDir, "", "xxx")
                 .getMaybe()
-                .subscribe(new MaybeObserver<String>(){
+                .flatMapObservable(new Function<String, ObservableSource<?>>() {
+                    @Override
+                    public ObservableSource<?> apply(@NonNull String filePath) throws Exception {
+                        lastOpenDir = ExtractFilePath(filePath);
+                        view.showMessage(filePath);
+                        return fileCache.uploadFile(filePath);
+                    }
+                })
+                .subscribe(new Observer(){
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onSuccess(@NonNull String s) {
-                        view.showMessage(s);
+                    public void onNext(@NonNull Object o) {
+                        if(o instanceof Integer)
+                            view.showMessage(String.format("uploading %d %%", ((Integer) o).intValue()) );
+                        else
+                            view.showMessage(o.toString());
                     }
+
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-
+                        if(view==null)
+                            return;
+                        view.showMessage(e.toString());
                     }
 
                     @Override
                     public void onComplete() {
-
+                        view.showMessage("upload complete");
                     }
                 });
 
@@ -269,14 +318,17 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     }
 
+    private ArrayList<IDiskRepresenter> disks=null;
     ArrayList<IDiskRepresenter> getDisks()
     {
-        ArrayList<IDiskRepresenter> disks=new ArrayList();
-        //disks.add(LocalDiskRepresenter.getLocalFS(view.getApplicationContext()));
+        if(disks==null) {
+            disks = new ArrayList();
+            //disks.add(LocalDiskRepresenter.getLocalFS(view.getApplicationContext()));
         /*disks.add(LocalDiskRepresenter.getExternalSD(view.getApplicationContext()));*/
-        disks.addAll(StorageUtils.getSD_list(view.getApplicationContext()));
-        disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
-        disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
+            disks.addAll(StorageUtils.getSD_list(view.getApplicationContext()));
+            disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
+            disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
+        }
 
         return disks;
     }

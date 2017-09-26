@@ -57,14 +57,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="open file" />
+            android:text="open file (download to cache)" />
 
         <Button
             android:id="@+id/showFileSaveDialogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="save file" />
+            android:text="save file (upload from cache)" />
 
         <Button
             android:id="@+id/showChooseDirDialogButton"

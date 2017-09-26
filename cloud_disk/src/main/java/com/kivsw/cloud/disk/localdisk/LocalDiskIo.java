@@ -324,4 +324,10 @@ public class LocalDiskIo implements IDiskIO {
     public String getErrorString(Throwable throwable) {
         return throwable.getMessage();
     }
+
+    @Override
+    public String convertToLocalPath(String devicePath)
+    {
+        return correctPath(devicePath);
+    };
 }

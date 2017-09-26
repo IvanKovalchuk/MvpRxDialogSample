@@ -1,10 +1,10 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
+import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
@@ -74,10 +74,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         visibleFileList = fileList;
 
         if(path != null) {
-            Uri uri = Uri.parse(path);
-            String scheme = uri.getScheme();
-            pathSegments = new ArrayList(uri.getPathSegments());
-            currentDisk = getDisk(scheme);
+            StorageUtils.CloudFile cf=StorageUtils.parseFileName(path, disks);
+            currentDisk = cf.diskRepresenter;
+            pathSegments = new ArrayList(cf.uri.getPathSegments());
         }
         else
             pathSegments = new ArrayList();
@@ -90,29 +89,31 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             selectDiskList();
     };
 
-    protected IDiskRepresenter getDisk(String scheme)
-    {
-        for(IDiskRepresenter dsk:disks)
-            if(dsk.getScheme().equals(scheme))
-            {
-                return dsk;
-            }
-        return null;
-    }
-
+    /**
+     * set all UI data
+     * @param itemToPos
+     */
     protected void setViewData(String itemToPos)
     {
         if(view==null)
             return;
 
-        view.setFileList(visibleFileList);
-        view.setPath(getCurrentDir()+filter.getWildCard());
-        view.setDisk(currentDisk);
-        view.showProgress(progressVisible);
+        if(diskListVisible)
+        {  // shows disk list
+            view.showProgress(false);
+            view.setDiskList(disks);
+        }
+        else
+        { // shows file list
+            view.setFileList(visibleFileList);
+            view.setPath(getCurrentDir() + filter.getWildCard());
+            view.setDisk(currentDisk);
+            view.showProgress(progressVisible);
 
+            if (itemToPos != null)
+                view.scrollToItem(itemToPos);
+        }
 
-        if(itemToPos!=null)
-            view.scrollToItem(itemToPos);
     }
 
     /**
@@ -291,9 +292,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     private boolean diskListVisible=false;
     protected void selectDiskList()
     {
-        view.showProgress(false);
-        view.setDiskList(disks);
         diskListVisible=true;
+        setViewData(null);
     };
 
     private Disposable updateDirDisposable=null;
@@ -329,7 +329,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                         ArrayList<IDiskIO.ResourceInfo> list = new ArrayList<IDiskIO.ResourceInfo>();
                         list.add(createUpdir());
                         if(resourceInfo.content()!=null)
-                            list.addAll( filter.filterList(resourceInfo.content()) );
+                            list.addAll(
+                                    filter.filterList(resourceInfo.content())
+                                    );
                         else
                             throw new Exception(context.getText(R.string.cant_read_dir).toString());
 

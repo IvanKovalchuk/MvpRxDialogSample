@@ -210,21 +210,23 @@ public abstract class BaseDiskIO implements IDiskIO {
      */
     static private class FilePart
     {
-        long pos;
+        long fragmentBegin, fragmentEnd ,fileSize;
         String link;
+
         OutputStream outputStream;
         InputStream inputStream;
         FilePart(String lnk, long p)
         {
-            link=lnk; pos=p;
+            link=lnk; fragmentBegin=fragmentEnd=p;
         }
         FilePart()
         {
             link=null;
-            pos=0;
+            fragmentBegin=0;
+            fragmentEnd=0;
         }
     }
-    protected final long fragmentLength=60*1024;
+    protected final long maxFragmentLength=60*1024;
     protected Observable<Integer> doDownloadResource(String url, final String localPath ) throws Exception
     {
         final FilePart filePart=new FilePart(url,0);
@@ -239,7 +241,8 @@ public abstract class BaseDiskIO implements IDiskIO {
                     @Override
                     public Observable apply(@NonNull FilePart filePart) throws Exception {
 
-                        String range = "bytes=" + String.valueOf(filePart.pos)+"-"+String.valueOf(filePart.pos+fragmentLength);
+                        //String range = "bytes=" + String.valueOf(filePart.pos)+"-"+String.valueOf(filePart.pos+fragmentLength);
+                        String range = "bytes=" + String.valueOf(filePart.fragmentBegin)+"-"+String.valueOf(filePart.fragmentEnd);
                         return doDownloadPartRequest(filePart.link, range);
 
                     }
@@ -260,12 +263,16 @@ public abstract class BaseDiskIO implements IDiskIO {
                         if(ranges!=null && (code==206))
                             res = (ranges.length<3) || (ranges[1]<(ranges[2]-1));
 
-                        if((ranges!=null) && (filePart.pos != ranges[0]))
+                        if((ranges!=null) && (filePart.fragmentBegin != ranges[0]))
                             throw new IOException("Incorrect file data from server");
 
-                        long offset=filePart.pos;
                         if(res){
-                            filePart.pos = ranges[1]+1;
+                            filePart.fileSize = ranges[2];
+                            filePart.fragmentBegin = ranges[1]+1;
+                            filePart.fragmentEnd = filePart.fragmentBegin+maxFragmentLength;
+                            if(filePart.fragmentEnd>=filePart.fileSize)
+                                   filePart.fragmentEnd=filePart.fileSize-1;
+
                             filePosition.onNext(filePart);
                         }
 
@@ -273,13 +280,13 @@ public abstract class BaseDiskIO implements IDiskIO {
                         if(response.body()!=null) {
                             byte[] data = response.body().bytes();
 
-                            if(ranges!=null) offset=ranges[0];
+                            //if(ranges!=null) offset=ranges[0];
                             filePart.outputStream.write(data);
                         }
 
                         if(!res) {
                             filePart.outputStream.close();
-                            if((code<200 || code >299) && code!=416)
+                            if((code<200 || code >299)/* && code!=416*/)
                             {
                                 throw new HttpException(response);
                             }
@@ -296,19 +303,19 @@ public abstract class BaseDiskIO implements IDiskIO {
                     }
                 })
 
-                .map((Function)new Function<Response<ResponseBody>, Long>(){
+                .map((Function)new Function<Response<ResponseBody>, Integer>(){
 
                             @Override
-                            public Long apply(@NonNull Response<ResponseBody> response) throws Exception {
+                            public Integer apply(@NonNull Response<ResponseBody> response) throws Exception {
                                 Headers hh=response.headers();
                                 String range=hh.get("Content-Range");
                                 long[] ranges = decodeRanges(range);
-                                return ranges[1]*100/ranges[2];
+                                return (int)(ranges[1]*100/ranges[2]);
 
                             }
                         }
                 )
-                .distinctUntilChanged() // suppresses the save values
+                .distinctUntilChanged() // suppresses the same values
                 .debounce(500, TimeUnit.MICROSECONDS); // drops item if they are too frequent
 
         //filePosition.onNext(filePart);
@@ -326,7 +333,7 @@ public abstract class BaseDiskIO implements IDiskIO {
     /**
      *
      * @param contentRange
-     * @return
+     * @return array that contains first, last bytes and total file size
      */
     protected long[] decodeRanges(String contentRange)
     {
@@ -372,6 +379,10 @@ public abstract class BaseDiskIO implements IDiskIO {
 
 
     };
+
+    @Override
+    public String convertToLocalPath(String path)
+    {return null;};
 
     /**
      * This class create request body out of a file

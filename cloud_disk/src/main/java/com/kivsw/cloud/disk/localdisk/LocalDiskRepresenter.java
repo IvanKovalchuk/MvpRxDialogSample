@@ -31,7 +31,7 @@ public class LocalDiskRepresenter extends BaseDiskRepresenter {
     }
 
 
-    protected LocalDiskRepresenter(Context context, LocalDiskIo localDiskIo, String scheme, String name, Bitmap bmp)
+    public LocalDiskRepresenter(Context context, LocalDiskIo localDiskIo, String scheme, String name, Bitmap bmp)
     {
         super(localDiskIo, scheme, name,bmp);
     }

@@ -180,15 +180,21 @@ public class MvpRxFileDialog extends BaseMvpFragment
         if(show) progress.setVisibility(View.VISIBLE);
         else progress.setVisibility(View.GONE);
     }
+    boolean FileNameEditVisible=true;
     public void showFileNameEdit(boolean show)
     {
-        if(show) fileNameLayout.setVisibility(View.VISIBLE);
+        FileNameEditVisible = show;
+        if(FileNameEditVisible) fileNameLayout.setVisibility(View.VISIBLE);
         else fileNameLayout.setVisibility(View.GONE);
     }
     public void setFileList(List<IDiskIO.ResourceInfo> fileList)
     {
         pathLayout.setVisibility(View.VISIBLE);
         diskLayout.setVisibility(View.VISIBLE);
+        if(FileNameEditVisible)
+            fileNameLayout.setVisibility(View.VISIBLE);
+        else
+            fileNameLayout.setVisibility(View.GONE);
         fileListView.setFileList(fileList);
     }
 
@@ -196,6 +202,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
     {
         pathLayout.setVisibility(View.GONE);
         diskLayout.setVisibility(View.GONE);
+        fileNameLayout.setVisibility(View.GONE);
         fileListView.setDiskList(disks);
     }
 
