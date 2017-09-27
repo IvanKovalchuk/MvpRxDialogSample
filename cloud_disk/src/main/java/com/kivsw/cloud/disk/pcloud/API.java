@@ -240,7 +240,7 @@ public class API {
         Single<MetadataContainer>  requestDeleteFile(@Query("access_token") String oAuthToken, @Query("path") String path); //
 
         @GET("/getfilelink")
-        Single<DownloadHosts>  requestFileLink(@Query("access_token") String oAuthToken, @Query("path") String path); // https://docs.pcloud.com/methods/streaming/getfilelink.html
+        Single<DownloadHosts>  requestFileLink(@Query("access_token") String oAuthToken, @Query("path") String path, @Query("forcedownload")int forcedownload); // https://docs.pcloud.com/methods/streaming/getfilelink.html
 
         @POST("/uploadfile")
         Single<MetadataListContainer>  requestUploadFile(@Query("access_token") String oAuthToken, @Query("path") String path, @Query("filename") String filename, @Body RequestBody data); //https://docs.pcloud.com/methods/file/uploadfile.html

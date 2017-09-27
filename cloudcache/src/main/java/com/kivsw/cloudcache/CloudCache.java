@@ -100,8 +100,9 @@ public class CloudCache {
                 Observable.fromCallable(new Callable<CacheFileInfo>() {
                     @Override
                     public CacheFileInfo call() throws Exception {// gets file from cache
-                        CacheFileInfo res=cacheData.get(fullFilePath); // TODO make sure it's not the main thread
-                        if(res==null)  res= new CacheFileInfo();
+                        CacheFileInfo res=cacheData.get(fullFilePath);
+                        if(res==null)
+                            res= new CacheFileInfo(); // cache does not have this file
                         return res;
                     }
                 })

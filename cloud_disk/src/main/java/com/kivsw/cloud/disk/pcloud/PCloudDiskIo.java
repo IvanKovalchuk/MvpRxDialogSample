@@ -229,7 +229,7 @@ public class PCloudDiskIo extends BaseDiskIO {
     @Override
     public Observable<Integer> downloadFile(String remotePath, final String localPath) {
         Observable chain=
-                requests.requestFileLink(tokenKeeper.getToken(), remotePath) // gets download link
+                requests.requestFileLink(tokenKeeper.getToken(), remotePath, 1) // gets download link
                         .subscribeOn(Schedulers.io())
                         .toObservable()
                         //.concatWith(Observable.<API.Link>never()) // get rid of "onComplete"

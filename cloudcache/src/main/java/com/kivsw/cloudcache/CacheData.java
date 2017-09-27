@@ -52,6 +52,10 @@ class CacheData {
 
         CacheFileInfo cfi = data.map.get(filePath);
         if(cfi !=null) {
+            File f=new File(cfi.localName); // check if the cache file exists
+            if(!f.exists())
+                return null;
+
             cfi.accessTime = System.currentTimeMillis();
             doSaveCacheMap();
         }
@@ -68,7 +72,7 @@ class CacheData {
         if(data==null)
             doLoadCacheMap();
 
-        delete(cfi.remoteName);
+        doDeleteItem(cfi.remoteName);
 
         cfi.accessTime = System.currentTimeMillis();
         data.map.put(cfi.remoteName, cfi);
