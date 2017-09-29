@@ -1,7 +1,9 @@
 package com.kivsw.cloud.OAuth;
 
 import android.content.Context;
+import android.os.Build;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 
 import io.reactivex.Observable;
 
@@ -57,6 +59,8 @@ public class OAuthPresenter implements OAuthActivityContract.IPresenter {
         this.core=core;
 
         //
+        if(  Build.VERSION.SDK_INT <21)
+           CookieSyncManager.createInstance(context);
         CookieManager cm= CookieManager.getInstance();
         boolean b=cm.acceptCookie();
         cm.removeAllCookie();

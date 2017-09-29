@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +48,11 @@ implements Contract.IView
         if(presenterId<=0)
             throw new RuntimeException("PRESENTER_ID argument must be for this fragment " + this.getClass().getName());
         presenter = (Contract.IDialogPresenter) pm.getPresenter(presenterId);
-        if(presenter==null)
-            throw new RuntimeException("cannot find a presenter for this fragment " + this.getClass().getName());
+        if(presenter==null) {
+            Log.e("BaseMvpFragment", "Cannot find a presenter for this fragment " + this.getClass().getName());
+            dismiss();
+            //throw new RuntimeException("cannot find a presenter for this fragment " + this.getClass().getName());
+        }
 
        /* if (savedInstanceState != null) {
             presenterId = savedInstanceState.getLong(PRESENTER_ID);
@@ -111,7 +115,8 @@ implements Contract.IView
     public void onDismiss(DialogInterface dialog)
     {
         super.onDismiss(dialog);
-        getPresenter().onDismiss();
+        if(getPresenter()!=null)
+            getPresenter().onDismiss();
     }
 
     @Override
