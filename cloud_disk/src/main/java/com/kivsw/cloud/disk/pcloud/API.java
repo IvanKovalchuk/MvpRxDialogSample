@@ -269,7 +269,7 @@ public class API {
         Single<Response<ResponseBody>>  requestDeleteFolder(@Query("access_token") String oAuthToken, @Query("path") String path);
 
         @GET
-        Single<Response<ResponseBody>> requestDownloadURL(@Url String url, @Header("Range") String range);
+        Single<Response<ResponseBody>> requestDownloadURL(@Url String url, @Query("access_token") String oAuthToken,  @Header("Range") String range);
 
     };
 
