@@ -268,8 +268,11 @@ public class API {
         @GET("/deletefolderrecursive")
         Single<Response<ResponseBody>>  requestDeleteFolder(@Query("access_token") String oAuthToken, @Query("path") String path);
 
+        @GET // partial download
+        Single<Response<ResponseBody>> requestPartialDownloadURL(@Url String url, @Query("access_token") String oAuthToken, @Header("Range") String range);
+
         @GET
-        Single<Response<ResponseBody>> requestDownloadURL(@Url String url, @Query("access_token") String oAuthToken,  @Header("Range") String range);
+        Single<Response<ResponseBody>> requestDownloadURL(@Url String url, @Query("access_token") String oAuthToken);
 
     };
 

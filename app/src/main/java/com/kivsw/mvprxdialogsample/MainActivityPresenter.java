@@ -193,9 +193,11 @@ public class MainActivityPresenter implements Contract.IPresenter {
         return path.substring(0,l);
     }
     String lastOpenDir=null;
+    boolean hasBeenDownloaded=false;
     public void  showFileOpen()
     {
 
+        hasBeenDownloaded=false;
         MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), lastOpenDir, null)
                 .getMaybe()
                 .flatMapObservable(new Function<String, ObservableSource<?>>() {
@@ -217,12 +219,16 @@ public class MainActivityPresenter implements Contract.IPresenter {
                     public void onNext(@NonNull Object o) {
                         if(view==null)
                             return;
-                        if(o instanceof Number)
-                             view.showMessage(String.format("downloading %d %%", ((Number) o).intValue()) );
+                        if(o instanceof Number) {
+                            view.showMessage(String.format("downloading %d %%", ((Number) o).intValue()));
+                            hasBeenDownloaded=true;
+                        }
                         if(o instanceof CacheFileInfo)
                         {
-
-                            view.showMessage(((CacheFileInfo)o).localName);
+                            String info;
+                            if(hasBeenDownloaded) info= "downloaded\n"+((CacheFileInfo)o).localName;
+                                    else  info= "cached\n"+((CacheFileInfo)o).localName;
+                            view.showMessage(info);
                         }
                     }
 

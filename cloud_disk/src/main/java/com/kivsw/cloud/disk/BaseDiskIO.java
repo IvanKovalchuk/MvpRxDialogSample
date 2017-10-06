@@ -231,6 +231,7 @@ public abstract class BaseDiskIO implements IDiskIO {
     {
         final FilePart filePart=new FilePart(url,0);
         filePart.outputStream = new FileOutputStream(localPath);
+        filePart.fragmentEnd=1;
 
         final Subject<FilePart> filePosition= //PublishSubject.create();
                                              BehaviorSubject.createDefault(filePart);

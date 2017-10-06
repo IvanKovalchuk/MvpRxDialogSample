@@ -258,7 +258,7 @@ public class PCloudDiskIo extends BaseDiskIO {
 
     @Override
     protected Observable doDownloadPartRequest(String link, String httpHdrRange) {
-        return convertorlessRequests.requestDownloadURL(  link, tokenKeeper.getToken(), httpHdrRange)
+        return convertorlessRequests.requestPartialDownloadURL(  link, tokenKeeper.getToken(), httpHdrRange)
                       .toObservable();
     }
 
