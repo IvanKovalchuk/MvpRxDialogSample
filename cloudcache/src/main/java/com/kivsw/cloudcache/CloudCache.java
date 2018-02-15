@@ -5,6 +5,7 @@ import android.content.Context;
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.StorageUtils;
+import com.kivsw.cloudcache.data.*;
 
 import java.io.File;
 import java.util.List;
@@ -21,7 +22,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by ivan on 9/19/17.
+ * This is a file cache
  */
 
 public class CloudCache {
@@ -54,11 +55,6 @@ public class CloudCache {
         cacheData = new CacheData(cacheDir, mapFileName, 1024*64, 5);
 
     }
-
-
-
-
-
 
  /*   public Completable markAsLocalyModified(final String filePath)
     {
@@ -161,7 +157,7 @@ public class CloudCache {
               return Observable.error(new Exception("incorrect path "+params.remoteFilePath));
 
         params.disk=params.cloudFile.diskRepresenter.getDiskIo();
-        params.cacheFileName = cacheData.getNewCacheFileName();//cacheDir+"/"+String.valueOf(cacheData.getNewId());
+        params.cacheFileName = cacheData.generateNewCacheFileName();//cacheDir+"/"+String.valueOf(cacheData.getNewId());
 
         return
                 params.disk.getResourceInfo(params.cloudFile.getPath())
@@ -175,7 +171,7 @@ public class CloudCache {
                                     public Object call() throws Exception { // updates cache data and return CacheFileInfo
                                         CacheFileInfo cfi=new CacheFileInfo(params.cacheFileName, params.remoteFilePath);
                                         cfi.modifiedTime = resourceInfo.modified();
-                                        cacheData.put(cfi);
+                                        cacheData.put(params.remoteFilePath, cfi);
                                         return cfi;
                                     }
                                 })
@@ -239,7 +235,7 @@ public class CloudCache {
                                         @Override
                                         public void accept(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
                                             params.cfi.modifiedTime = resourceInfo.modified();
-                                            cacheData.doSaveCacheMap();
+                                            cacheData.put(params.cfi.remoteName, params.cfi);//doSaveCacheMap();
                                         }
                                     });
                         }
@@ -247,38 +243,5 @@ public class CloudCache {
     }
 
 
-
-
-/*        params.disk.uploadFile(params.cfi.remoteName, params.cfi.localName)
-                .concatWith(params.disk.getResourceInfo())
-
-        Single.just(remoteFilePath)
-                .observeOn(Schedulers.io())
-                .flatMapObservable(new Function<String, ObservableSource<?>>() {
-                    @Override
-                    public ObservableSource<?> apply(@NonNull String s) throws Exception {
-
-
-                        final CacheData.CacheFileInfo cfi = cacheData.get(remoteFilePath);
-
-                        Observable onFinishObservable=cloudFile.diskRepresenter.getDiskIo().getResourceInfo(cfi.remoteName)
-                                .subscribeOn(Schedulers.io())
-                                .map(new Function<IDiskIO.ResourceInfo, Object>() {
-                                    @Override
-                                    public Object apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
-                                        cfi.modifiedTime = resourceInfo.modified();
-                                        cacheData.doSaveCacheMap();
-                                        return Observable.empty();
-                                    }
-                                })
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .toObservable();
-
-
-                        return cloudFile.diskRepresenter.getDiskIo().uploadFile(cfi.remoteName, cfi.localName)
-                                .concatWith(onFinishObservable);
-                    }
-                })
-    }*/
 
 }

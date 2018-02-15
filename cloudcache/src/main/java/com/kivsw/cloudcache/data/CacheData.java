@@ -1,4 +1,4 @@
-package com.kivsw.cloudcache;
+package com.kivsw.cloudcache.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,16 +14,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by ivan on 9/22/17.
+ * This class keeps and controls cached files
+ * the class may
  */
-class CacheData {
+public class CacheData {
 
 
     private class MapData {
         Map<String, CacheFileInfo> map = new HashMap<>();
         long lastId;
     }
-    MapData data;
+
+    MapData data; // all data to be saved
+
     String path, mapFileName;
     long maxDataSize;
     int maxFileCount;
@@ -42,15 +45,19 @@ class CacheData {
         this.maxFileCount=maxFileCount;
     }
 
-    synchronized String getNewCacheFileName() {
+    synchronized public String generateNewCacheFileName() {
         return String.format("%s%08d.cache",path, data.lastId++);
     }
 
-    public synchronized CacheFileInfo get(String filePath) throws IOException{
+    protected Map<String, CacheFileInfo> getMapData() throws IOException{
         if(data==null)
             doLoadCacheMap();
+        return data.map;
+    }
 
-        CacheFileInfo cfi = data.map.get(filePath);
+    public synchronized CacheFileInfo get(String remoteFilePath) throws IOException{
+
+        CacheFileInfo cfi = getMapData().get(remoteFilePath);
         if(cfi !=null) {
             File f=new File(cfi.localName); // check if the cache file exists
             if(!f.exists())
@@ -68,14 +75,16 @@ class CacheData {
      * @param cfi
      * @throws IOException
      */
-    public synchronized void put(CacheFileInfo cfi) throws IOException{
-        if(data==null)
-            doLoadCacheMap();
+    public synchronized void put(String remoteFilePath, CacheFileInfo cfi) throws IOException{
 
-        doDeleteItem(cfi.remoteName);
+        CacheFileInfo oldCfi =  getMapData().get(remoteFilePath);
+        if(oldCfi!=null)
+          if(!oldCfi.localName.equals(cfi.localName))
+             doDeleteItem(cfi.remoteName);
 
         cfi.accessTime = System.currentTimeMillis();
-        data.map.put(cfi.remoteName, cfi);
+        cfi.remoteName = remoteFilePath;
+        getMapData().put(cfi.remoteName, cfi);
 
         trimCache();
 
@@ -89,20 +98,20 @@ class CacheData {
      */
 
     public synchronized void delete(String filePath) throws IOException{
-        if(data==null)
-            doLoadCacheMap();
 
         doDeleteItem(filePath);
         doSaveCacheMap();
     };
-    private void doDeleteItem(String filePath)
+    private boolean doDeleteItem(String filePath) throws IOException
     {
-        CacheFileInfo cfi = data.map.remove(filePath);
+        CacheFileInfo cfi = getMapData().remove(filePath);
         if (cfi!=null && cfi.localName!=null)
         {
             File file = new File(cfi.localName);
             file.delete();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -111,12 +120,9 @@ class CacheData {
 
     private synchronized void trimCache() throws IOException
     {
-        /*if(data==null)
-            doLoadCacheMap();*/
-
 
         // sorts by access time descent order
-        ArrayList<CacheFileInfo> files = new ArrayList(data.map.values());
+        ArrayList<CacheFileInfo> files = new ArrayList(getMapData().values());
         Collections.sort(files, new Comparator<CacheFileInfo>(){
             @Override
             public int compare(CacheFileInfo o1, CacheFileInfo o2) {
@@ -183,7 +189,7 @@ class CacheData {
 
             if(fileName.equals(aCacheFile))
                 return true;
-        }
+        };
 
         return false;
     }

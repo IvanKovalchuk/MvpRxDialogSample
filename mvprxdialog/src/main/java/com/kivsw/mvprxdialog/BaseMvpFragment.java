@@ -136,7 +136,6 @@ implements Contract.IView
         headerIcon.setImageBitmap(icon);
         if(icon==null) headerIcon.setVisibility(View.GONE);
 
-
         headerTextView =  (TextView)rootView.findViewById(R.id.headerText);
         headerTextView.setText(Html.fromHtml(getArguments().getString(TITLE_PARAM)));
     }

@@ -1,6 +1,6 @@
 package com.kivsw.mvprxdialog;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,7 +23,7 @@ public class PresenterManager {
     public PresenterManager()
     {
         nextId=1;
-        map = new Hashtable();
+        map = new HashMap<>();
     }
 
     protected long generateId()

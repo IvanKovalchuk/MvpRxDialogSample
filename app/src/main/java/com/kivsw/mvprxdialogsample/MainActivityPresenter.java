@@ -10,7 +10,7 @@ import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
-import com.kivsw.cloudcache.CacheFileInfo;
+import com.kivsw.cloudcache.data.CacheFileInfo;
 import com.kivsw.cloudcache.CloudCache;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
