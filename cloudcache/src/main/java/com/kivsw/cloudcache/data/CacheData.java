@@ -189,7 +189,7 @@ public class CacheData {
 
             if(fileName.equals(aCacheFile))
                 return true;
-        };
+        }
 
         return false;
     }

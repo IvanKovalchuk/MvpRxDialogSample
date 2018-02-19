@@ -5,11 +5,8 @@ import com.kivsw.cloud.disk.IDiskIO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Completable;
@@ -30,7 +27,7 @@ public class LocalDiskIo implements IDiskIO {
      * returns all the storage devices
      * @return
      */
-    static public HashSet<String> getExternalMounts()//https://stackoverflow.com/questions/11281010/how-can-i-get-external-sd-card-path-for-android-4-0
+   /* static public HashSet<String> getExternalMounts()//https://stackoverflow.com/questions/11281010/how-can-i-get-external-sd-card-path-for-android-4-0
     {
         final HashSet<String> out = new HashSet<String>();
         String reg = "(?i).*vold.*(vfat|ntfs|exfat|fat32|ext3|ext4).*rw.*";
@@ -64,7 +61,7 @@ public class LocalDiskIo implements IDiskIO {
             }
         }
         return out;
-    }
+    }*/
     public LocalDiskIo()
     {
         this("/");
