@@ -56,12 +56,17 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
 
     @Override
-    public void setUI(Contract.IView view) {
+    public void setUI(@NonNull Contract.IView view) {
         this.view = (MainActivity)view;
 
         if( this.view!=null)
             fileCache = CloudCache.newInstance(this.view.getApplicationContext(),getDisks(), 1024*64, 5);
     }
+    @Override
+    public void removeUI()
+    {
+        this.view = null;
+    };
 
     long presenter_id;
     @Override

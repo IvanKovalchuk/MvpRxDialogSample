@@ -31,4 +31,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(path: ':mvprxdialog')
     compile project(path: ':mvprxfiledialog')
+    compile project(path: ':cloud_disk')
 }

@@ -61,10 +61,16 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     }
 
     @Override
-    public void setUI(Contract.IView view) {
+    public void setUI(@NonNull Contract.IView view) {
         this.view = (MvpRxFileDialog)view;
         setViewData(null);
     }
+
+    @Override
+    public void removeUI()
+    {
+        this.view = null;
+    };
 
     protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
     {

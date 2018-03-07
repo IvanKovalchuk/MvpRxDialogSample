@@ -28,10 +28,15 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
     }
 
     @Override
-    public void setUI(Contract.IView view) {
+    public void setUI(@NonNull Contract.IView view) {
         this.view = (MvpMessageBox)view;
     }
 
+    @Override
+    public void removeUI()
+    {
+        this.view = null;
+    };
 
 
     public static final int OK_BUTTON=1,

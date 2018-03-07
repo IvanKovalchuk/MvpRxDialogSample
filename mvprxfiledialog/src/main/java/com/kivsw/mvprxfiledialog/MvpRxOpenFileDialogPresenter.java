@@ -38,9 +38,12 @@ public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
 
     public void onOkClick()
     {
-        if(setFileListFilter(getSelectedFile()))
+        String fileName = getSelectedFile();
+        if(fileName==null)
             return;
 
+        if(setFileListFilter(fileName))
+            return;
 
         emmiter.onSuccess(getSelectedFullFileName());
         deletePresenter();

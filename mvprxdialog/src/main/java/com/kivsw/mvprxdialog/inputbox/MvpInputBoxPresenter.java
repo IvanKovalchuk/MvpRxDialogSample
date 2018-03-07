@@ -29,10 +29,14 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
     }
 
     @Override
-    public void setUI(Contract.IView view) {
+    public void setUI(@NonNull Contract.IView view) {
         this.view = (MvpInputBox)view;
     }
-
+    @Override
+    public void removeUI()
+    {
+        this.view = null;
+    };
     /**
      * Inteface for checking a value
      */
