@@ -43,7 +43,7 @@ implements Contract.IView
         super.onCreate(savedInstanceState);
         //setShowsDialog();
 
-        PresenterManager pm=PresenterManager.getInstance();
+        PresenterList pm= PresenterList.getInstance();
         presenterId = getArguments().getLong(PRESENTER_ID);
         if(presenterId<=0)
             throw new RuntimeException("PRESENTER_ID argument must be for this fragment " + this.getClass().getName());
@@ -88,7 +88,7 @@ implements Contract.IView
     public void onStop()
     {
         super.onStop();
-        getPresenter().setUI(null);
+        getPresenter().removeUI();
     }
 
     @Override

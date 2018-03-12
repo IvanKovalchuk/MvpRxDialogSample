@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
-import com.kivsw.mvprxdialog.PresenterManager;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.icodir);
         String title = context.getResources().getText(R.string.open_file).toString();
         MvpRxOpenFileDialogPresenter presenter = new MvpRxOpenFileDialogPresenter(context, disks, defaultPath, mask);
-        long id= PresenterManager.getInstance().addNewPresenter(presenter);
+        long id= presenter.getDialogPresenterId();
 
         MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
 

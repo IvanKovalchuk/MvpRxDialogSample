@@ -12,14 +12,14 @@ public interface Contract {
         IView getUI();
         void setUI(@NonNull IView view);
         void removeUI();
-        void setPresenterId(long id);
-        long getPresenterId();
-
 
     }
 
     interface IDialogPresenter extends IPresenter
     {
+        void registerDialogPresenter();
+        long getDialogPresenterId();
+
         void onCancel();
         void onDismiss();
     }

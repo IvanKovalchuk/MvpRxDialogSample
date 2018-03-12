@@ -6,7 +6,6 @@ import android.text.Editable;
 
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
-import com.kivsw.mvprxdialog.PresenterManager;
 
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
@@ -20,7 +19,9 @@ import io.reactivex.annotations.NonNull;
 public class MvpInputBoxPresenter extends BaseMvpPresenter {
 
     private MvpInputBoxPresenter()
-    {}
+    {
+        registerDialogPresenter();
+    }
 
     private MvpInputBox view=null;
     @Override
@@ -96,8 +97,8 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
     {
         MvpInputBoxPresenter presenter = new MvpInputBoxPresenter();
         presenter.testValue = testValue;
+        long id=presenter.getDialogPresenterId();
 
-        long id= PresenterManager.getInstance().addNewPresenter(presenter);
         MvpInputBox fragment = MvpInputBox.newInstance(id, icon, title, msg, InputValue, inputType);
 
         fragment.show(fragmentManager, String.valueOf(id));

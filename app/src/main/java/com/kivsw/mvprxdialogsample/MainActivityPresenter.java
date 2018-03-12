@@ -68,17 +68,6 @@ public class MainActivityPresenter implements Contract.IPresenter {
         this.view = null;
     };
 
-    long presenter_id;
-    @Override
-    public void setPresenterId(long id) {
-        presenter_id=id;
-    }
-
-    @Override
-    public long getPresenterId() {
-        return presenter_id;
-    }
-
 
     public void showDialog()
     {

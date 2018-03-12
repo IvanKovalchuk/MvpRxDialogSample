@@ -7,20 +7,20 @@ import java.util.Map;
  * this class holds all the presenters
  */
 
-public class PresenterManager {
+class PresenterList {
 
-    private static  PresenterManager singletone=null;
-    public static PresenterManager getInstance()
+    private static PresenterList singletone=null;
+    public static PresenterList getInstance()
     {
         if(singletone==null)
-            singletone = new PresenterManager();
+            singletone = new PresenterList();
         return singletone;
     };
 
 
-    long nextId;
-    Map<Long, Contract.IPresenter> map;
-    public PresenterManager()
+    private long nextId;
+    private Map<Long, Contract.IPresenter> map;
+    protected PresenterList()
     {
         nextId=1;
         map = new HashMap<>();
@@ -31,20 +31,20 @@ public class PresenterManager {
         return nextId++;
     }
 
-    public Contract.IPresenter getPresenter(long presenterId)
+    Contract.IPresenter getPresenter(long presenterId)
     {
         return map.get(presenterId);
     };
 
-    public long addNewPresenter(Contract.IPresenter presenter)
+    long addNewPresenter(Contract.IDialogPresenter presenter)
     {
         long presenterId = generateId();
-        presenter.setPresenterId(presenterId);
+        //presenter.setPresenterId(presenterId);
         map.put(presenterId, presenter);
         return presenterId;
     }
 
-    public void deletePresenter(long presenterId)
+    void deletePresenter(long presenterId)
     {
         map.remove(presenterId);
     }

@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.Contract;
-import com.kivsw.mvprxdialog.PresenterManager;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_folder);
         String title = context.getResources().getText(R.string.choose_directory).toString();
         MvpRxSelectDirDialogPresenter presenter = new MvpRxSelectDirDialogPresenter(context, disks, defaultPath, mask);
-        long id= PresenterManager.getInstance().addNewPresenter(presenter);
+        long id= presenter.getDialogPresenterId();
 
         MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
 

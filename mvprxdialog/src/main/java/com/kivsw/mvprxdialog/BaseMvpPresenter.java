@@ -11,12 +11,18 @@ public abstract class BaseMvpPresenter
 
 
     @Override
-    public void setPresenterId(long id) {
+    public void registerDialogPresenter()
+    {
+        presenterId = PresenterList.getInstance().addNewPresenter(this);
+    };
+    /*public void setPresenterId(long id) {
         presenterId = id;
-    }
+    }*/
 
     @Override
-    public long getPresenterId() {
+    public long getDialogPresenterId() {
+        if(presenterId==0)
+            throw new RuntimeException("Presenter is not registered. Invoke registerDialogPresenter().");
         return presenterId;
     }
 
@@ -33,6 +39,6 @@ public abstract class BaseMvpPresenter
 
     protected void deletePresenter()
     {
-            PresenterManager.getInstance().deletePresenter(getPresenterId());
+            PresenterList.getInstance().deletePresenter(getDialogPresenterId());
     }
 }

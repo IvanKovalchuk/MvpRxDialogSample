@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager;
 
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
-import com.kivsw.mvprxdialog.PresenterManager;
 
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
@@ -19,7 +18,9 @@ import io.reactivex.annotations.NonNull;
 public class MvpMessageBoxPresenter extends BaseMvpPresenter
 {
     private MvpMessageBoxPresenter()
-    {};
+    {
+        registerDialogPresenter();
+    };
 
     MvpMessageBox view;
     @Override
@@ -75,8 +76,7 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
                                                       String okTitle, String cancelTitle, String exTitle)
     {
         MvpMessageBoxPresenter presenter = new MvpMessageBoxPresenter();
-        long id= PresenterManager.getInstance().addNewPresenter(presenter);
-
+        long id = presenter.getDialogPresenterId();
         MvpMessageBox fragment = MvpMessageBox.newInstance(id, icon, title, msg, askDontShowAgain, okTitle, cancelTitle, exTitle);
 
         fragment.show(fragmentManager, String.valueOf(id));

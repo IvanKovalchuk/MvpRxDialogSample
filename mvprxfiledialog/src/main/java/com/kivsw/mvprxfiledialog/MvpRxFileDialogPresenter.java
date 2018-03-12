@@ -93,6 +93,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             updateDir(true, null);
         else
             selectDiskList();
+
+        registerDialogPresenter();
     };
 
     /**
