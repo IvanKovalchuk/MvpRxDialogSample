@@ -9,13 +9,17 @@ import com.kivsw.cloud.disk.IDiskRepresenter;
 
 import java.util.List;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
+
 /**
  * Created by ivan on 9/10/2017.
  */
 
 public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
 
-    public static MvpRxOpenFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String mask)
+    public static MvpRxOpenFileDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
+                                                            @NonNull List<IDiskRepresenter> disks, @Nullable String defaultPath, @Nullable String mask)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.icodir);

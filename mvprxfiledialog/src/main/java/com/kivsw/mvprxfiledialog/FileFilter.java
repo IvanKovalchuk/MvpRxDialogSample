@@ -65,7 +65,7 @@ class FileFilter {
                     if(b>0 && wildCard.charAt(b-1)=='\\') // ommit "\\;" sequence
                         continue;
                     String str=wildCard.substring(b+1, e);
-                    if(str.length()>0) // ommit empty strings
+                    if(str.length()>0) // omit empty strings
                     {
                         str="^"+Pattern.quote(str)+"$"; // screen possible special symbols
                         str=str.replace("\\;", ";");

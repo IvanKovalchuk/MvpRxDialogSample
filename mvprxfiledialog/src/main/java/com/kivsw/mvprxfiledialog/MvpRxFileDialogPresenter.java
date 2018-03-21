@@ -27,11 +27,12 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
 /**
- * Created by ivan on 9/7/2017.
+ * this is the base class for file dialogs
  */
 
 public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
@@ -72,7 +73,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         this.view = null;
     };
 
-    protected MvpRxFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
+    protected MvpRxFileDialogPresenter(Context context, @NonNull List<IDiskRepresenter> disks, @Nullable String path, @Nullable String mask)
     {
         this.context = context.getApplicationContext();
         this.disks = disks;

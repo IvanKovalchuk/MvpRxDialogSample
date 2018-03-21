@@ -16,6 +16,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
@@ -25,7 +26,8 @@ import io.reactivex.functions.Function;
  */
 
 public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
-    public static MvpRxSaveFileDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String mask, String defaultExt)
+    public static MvpRxSaveFileDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
+                                                            @NonNull List<IDiskRepresenter> disks, @Nullable String defaultPath, @Nullable String mask, @Nullable String defaultExt)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_save);

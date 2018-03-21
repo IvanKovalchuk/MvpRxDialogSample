@@ -10,13 +10,17 @@ import com.kivsw.mvprxdialog.Contract;
 
 import java.util.List;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
+
 
 /**
- * Created by ivan on 9/10/2017.
+ * this class is a dialog to selects a dir
  */
 
 public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
-    public static MvpRxSelectDirDialogPresenter createDialog(Context context, FragmentManager fragmentManager, List<IDiskRepresenter> disks, String defaultPath, String mask)
+    public static MvpRxSelectDirDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
+                                                             @NonNull List<IDiskRepresenter> disks, @Nullable String defaultPath, @Nullable String mask)
     {
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_folder);
         String title = context.getResources().getText(R.string.choose_directory).toString();
@@ -37,7 +41,7 @@ public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
               this.view.showFileNameEdit(false);
     }
 
-    private MvpRxSelectDirDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
+    private MvpRxSelectDirDialogPresenter(@NonNull Context context, @NonNull List<IDiskRepresenter> disks, String path, String mask)
     {
         super(context, disks, path, mask);
     }

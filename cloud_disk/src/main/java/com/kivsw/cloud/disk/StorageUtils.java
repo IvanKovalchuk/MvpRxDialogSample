@@ -166,7 +166,9 @@ public class StorageUtils {
         CloudFile cf=new CloudFile();
         Uri uri = Uri.parse(path);
         String scheme = uri.getScheme();
-        //pathSegments = new ArrayList(uri.getPathSegments());
+        if(scheme==null && disks.size()>0) {
+            return null;
+        }
 
         cf.uri = uri;
         cf.diskRepresenter = findDisk( scheme, disks);
