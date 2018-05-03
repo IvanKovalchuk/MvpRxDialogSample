@@ -1,11 +1,13 @@
 package com.kivsw.cloudcache;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.StorageUtils;
-import com.kivsw.cloudcache.data.*;
+import com.kivsw.cloudcache.data.CacheData;
+import com.kivsw.cloudcache.data.CacheFileInfo;
 
 import java.io.File;
 import java.util.List;
@@ -27,13 +29,16 @@ import io.reactivex.schedulers.Schedulers;
 
 public class CloudCache {
 
-    public static synchronized  CloudCache newInstance(Context context, List<IDiskRepresenter> disks, long maxSize, int maxFileCount) {
-            File cacheDir=null;
-            cacheDir = context.getExternalCacheDir();
+    public static synchronized  CloudCache newInstance(Context context, List<IDiskRepresenter> disks,  long maxSize, int maxFileCount) {
+
+        return newInstance( context, null, disks, maxSize, maxFileCount);
+    }
+    public static synchronized  CloudCache newInstance(Context context, File cacheDir, List<IDiskRepresenter> disks,  long maxSize, int maxFileCount) {
+            if(cacheDir==null)
+            if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) )
+                cacheDir = context.getExternalCacheDir();
             if(cacheDir==null)
                 cacheDir = context.getCacheDir();
-            String dir = context.getCacheDir().getAbsolutePath();
-            String exDir=  context.getExternalCacheDir().getAbsolutePath();
 
             return new CloudCache(cacheDir.getAbsolutePath(), disks, maxSize, maxFileCount);
     }

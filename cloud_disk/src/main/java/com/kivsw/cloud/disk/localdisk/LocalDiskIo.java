@@ -4,7 +4,11 @@ package com.kivsw.cloud.disk.localdisk;
 import com.kivsw.cloud.disk.IDiskIO;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -308,13 +312,50 @@ public class LocalDiskIo implements IDiskIO {
     }
 
     @Override
-    public Observable<Integer> downloadFile(String remotePath, String localPath) {
-        return Observable.error(new Exception("not implemented"));
-    }
+    public Observable<Integer> downloadFile(final String remotePath, final String localPath) {
+        //return Observable.error(new Exception("not implemented"));
+        return
+                Observable.fromCallable(new Callable<Integer>(){
+
+                    @Override
+                    public Integer call() throws Exception {
+                        File fileSrc = new File(correctPath(remotePath));
+                        File fileDst = new File(localPath);
+                        copyFile(fileSrc, fileDst);
+                        return Integer.valueOf(100);
+                    }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+    };
+
 
     @Override
-    public Observable<Integer> uploadFile(String remotePath, String localPath) {
-        return Observable.error(new Exception("not implemented"));
+    public Observable<Integer> uploadFile(final String remotePath, final String localPath) {
+        //return Observable.error(new Exception("not implemented"));
+        return
+            Observable.fromCallable(new Callable<Integer>(){
+
+                    @Override
+                    public Integer call() throws Exception {
+                        File fileSrc = new File(localPath);
+                        File fileDst = new File(correctPath(remotePath));
+                        copyFile(fileSrc, fileDst);
+                        return Integer.valueOf(100);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    };
+
+    protected void copyFile(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
     }
 
     @Override

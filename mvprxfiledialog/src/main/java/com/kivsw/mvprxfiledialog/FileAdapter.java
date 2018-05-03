@@ -70,36 +70,7 @@ class FileAdapter  extends BaseListAdapter
         observersOnChanges();
     }
 
-    //----------------------------------------
-    /** function checks whether file 'fi' should be shown
-     *
-     * @param fi
-     * @return true if the filter allows this file fi
-     */
-  /*  boolean checkFilter(IDiskIO.ResourceInfo fi)
-    {
-        boolean r=true;
 
-        // check up file type
-        if(fi.isFolder())    r = r && isAllowedDir;
-        if(!fi.isFolder()) 	r = r && isAllowedFile;
-        //if(fi.isHidden) r = r && isAllowedHidden;
-
-        // check up file mask, if it's necessary
-        if(r && (!filters.isEmpty()) && (!fi.isFolder()))
-        {
-            boolean rr=false;
-            for(int i=filters.size()-1; !rr && i>=0;  i--)
-            {
-                Matcher matcher = filters.get(i).matcher(fi.name());
-                rr|=matcher.find();
-            }
-            r=rr;
-        }
-
-        return r;
-
-    }*/
     //----------------------------------------
     /**  return amount of the files in fileList
      *  @return
