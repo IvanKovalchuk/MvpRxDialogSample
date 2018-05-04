@@ -7,6 +7,7 @@ import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Completable;
@@ -21,7 +22,7 @@ import io.reactivex.Single;
 
 public class DiskContainer {
 
-    private ArrayList<IDiskRepresenter> diskList;
+    private List<IDiskRepresenter> diskList;
 
     public DiskContainer(List<IDiskRepresenter> disks)
     {
@@ -29,7 +30,7 @@ public class DiskContainer {
     };
     public DiskContainer(IDiskRepresenter... disks)
     {
-        diskList = new ArrayList(disks.length);
+        diskList = Collections.synchronizedList(new ArrayList(disks.length));
         addDisk(disks);
     };
     public void addDisk(IDiskRepresenter... disks)
