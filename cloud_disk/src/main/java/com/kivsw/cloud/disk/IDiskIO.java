@@ -28,8 +28,8 @@ public interface IDiskIO {
     Observable<Integer> downloadFile(String remotePath, String localPath);
     Observable<Integer> uploadFile(String remotePath, String localPath);
 
-    String getErrorString(Throwable throwable);
-    String convertToLocalPath(String path);
+    String getErrorString(Throwable throwable); // convert an exception into readable form
+    String convertToLocalPath(String path); // returns path in local file system or null
 
 
     interface DiskInfo{

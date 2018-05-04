@@ -3,7 +3,6 @@ package com.kivsw.cloud.disk;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -154,34 +153,5 @@ public class StorageUtils {
         return res;
     }
 
-    static public class CloudFile
-    {
-        public IDiskRepresenter diskRepresenter;
-        public Uri uri;
-        public String getPath(){return uri.getPath();}
-    }
 
-    public static CloudFile parseFileName(String path, List<IDiskRepresenter> disks)
-    {
-        CloudFile cf=new CloudFile();
-        Uri uri = Uri.parse(path);
-        String scheme = uri.getScheme();
-        if(scheme==null && disks.size()>0) {
-            return null;
-        }
-
-        cf.uri = uri;
-        cf.diskRepresenter = findDisk( scheme, disks);
-        return cf;
-
-    }
-    public static IDiskRepresenter findDisk(String scheme, List<IDiskRepresenter> disks)
-    {
-        for(IDiskRepresenter dsk:disks)
-            if(dsk.getScheme().equals(scheme))
-            {
-                return dsk;
-            }
-        return null;
-    }
 }

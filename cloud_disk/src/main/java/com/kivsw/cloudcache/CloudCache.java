@@ -3,9 +3,9 @@ package com.kivsw.cloudcache;
 import android.content.Context;
 import android.os.Environment;
 
+import com.kivsw.cloud.DiskContainer;
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
-import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.cloudcache.data.CacheData;
 import com.kivsw.cloudcache.data.CacheFileInfo;
 
@@ -44,7 +44,7 @@ public class CloudCache {
     }
 
 
-    private List<IDiskRepresenter> disks;
+    private DiskContainer disks;
     private String cacheDir;
     private CacheData cacheData=null;
     static private final String mapFileName="map";
@@ -52,7 +52,7 @@ public class CloudCache {
 
     protected CloudCache(String cachePath, List<IDiskRepresenter> disks, long maxSize, int maxFileCount)
     {
-        this.disks = disks;
+        this.disks = new DiskContainer(disks);
         if(cachePath.charAt(cachePath.length()-1)!=File.separatorChar)
             cachePath = cachePath+File.separatorChar;
         cacheDir = cachePath+CloudCache.class.getName();
@@ -86,8 +86,8 @@ public class CloudCache {
     public Observable getFileFromCache(final String fullFilePath)
     {
         // check path correctness
-        StorageUtils.CloudFile cf= StorageUtils.parseFileName(fullFilePath, disks);
-        if(cf.diskRepresenter==null)
+        DiskContainer.CloudFile cf= disks.parseFileName(fullFilePath);
+        if(cf==null)
              return Observable.error(new Exception("incorrect path"));
 
         // check if the file needs to be cached
@@ -152,13 +152,13 @@ public class CloudCache {
         {
             IDiskIO disk;
             String remoteFilePath, cacheFileName;
-            StorageUtils.CloudFile cloudFile;
+            DiskContainer.CloudFile cloudFile;
         };
         final DownloadParams params=new DownloadParams();
 
         params.remoteFilePath = remoteFilePath;
-        params.cloudFile = StorageUtils.parseFileName(params.remoteFilePath, disks);
-        if(params.cloudFile.diskRepresenter==null)
+        params.cloudFile = disks.parseFileName(params.remoteFilePath);
+        if(params.cloudFile==null)
               return Observable.error(new Exception("incorrect path "+params.remoteFilePath));
 
         params.disk=params.cloudFile.diskRepresenter.getDiskIo();
@@ -201,14 +201,53 @@ public class CloudCache {
      */
     public Observable<Integer> uploadFile(final String remoteFilePath) {
         class UploadParams {
-            IDiskIO disk;
             CacheFileInfo cfi;
-            StorageUtils.CloudFile cloudFile;
+            DiskContainer.CloudFile cloudFile;
+            IDiskIO getDisk() { return cloudFile.diskRepresenter.getDiskIo();}
         }
-        ;
+
         final UploadParams params = new UploadParams();
+        params.cloudFile = disks.parseFileName(remoteFilePath);
+        if (params.cloudFile == null)
+            return Observable.error(new Exception("incorrect path " + remoteFilePath));
+
+        String localFN=params.getDisk().convertToLocalPath(params.cloudFile.getPath()); // do not cache local files
+        if(localFN!=null)
+            return Observable.empty();
 
         return
+                Single.fromCallable(new Callable<UploadParams>() {
+                        @Override
+                        public UploadParams call() throws Exception {
+                            params.cfi = cacheData.get(remoteFilePath); // TODO make sure it's not the main thread
+                            if (params.cfi == null)
+                                   throw new Exception("no such a file in cache " + remoteFilePath);
+                            return params;
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .flatMapObservable(new Function<UploadParams, ObservableSource<Integer>>() {
+                        @Override
+                        public ObservableSource<Integer> apply(@NonNull UploadParams params) throws Exception {
+                            return params.getDisk().uploadFile(params.cloudFile.getPath(), params.cfi.localName);
+                        }
+                    })
+                    .observeOn(Schedulers.io())
+                    .doOnComplete(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            params.getDisk().getResourceInfo(params.cloudFile.getPath()) // update file's time
+                                    .subscribe(new Consumer<IDiskIO.ResourceInfo>() {
+                                        @Override
+                                        public void accept(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
+                                            params.cfi.modifiedTime = resourceInfo.modified();
+                                            cacheData.put(params.cfi.remoteName, params.cfi);//doSaveCacheMap();
+                                        }
+                                    });
+                        }
+                    });
+
+       /* return
                 Single.fromCallable(new Callable<UploadParams>() {
                             @Override
                             public UploadParams call() throws Exception {
@@ -216,7 +255,7 @@ public class CloudCache {
                                 if (params.cfi == null)
                                     throw new Exception("no such a file in cache " + remoteFilePath);
 
-                                params.cloudFile = StorageUtils.parseFileName(remoteFilePath, disks);
+                                params.cloudFile = disks.parseFileName(remoteFilePath);
                                 if (params.cloudFile.diskRepresenter == null)
                                     throw new Exception("incorrect path " + remoteFilePath);
 
@@ -244,7 +283,7 @@ public class CloudCache {
                                         }
                                     });
                         }
-                    });
+                    });*/
     }
 
 

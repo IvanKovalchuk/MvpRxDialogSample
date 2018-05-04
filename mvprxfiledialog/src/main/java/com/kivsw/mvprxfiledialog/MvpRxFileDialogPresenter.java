@@ -2,9 +2,9 @@ package com.kivsw.mvprxfiledialog;
 
 import android.content.Context;
 
+import com.kivsw.cloud.DiskContainer;
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
-import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.mvprxdialog.BaseMvpPresenter;
 import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
@@ -41,7 +41,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     private TypeDialog typeDialog;*/
     protected Context context;
     protected MvpRxFileDialog view=null;
-    private List<IDiskRepresenter> disks;
+    private DiskContainer disks;
     private List<IDiskIO.ResourceInfo> fileList=null, visibleFileList=null;
     private boolean progressVisible=true;
     private List<String> pathSegments;
@@ -55,6 +55,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             emmiter = e;
         }
     });
+
+    final static String UP_DIR_NAME="..";
 
     @Override
     public Contract.IView getUI() {
@@ -73,20 +75,21 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         this.view = null;
     };
 
-    protected MvpRxFileDialogPresenter(Context context, @NonNull List<IDiskRepresenter> disks, @Nullable String path, @Nullable String mask)
+    protected MvpRxFileDialogPresenter(Context context, @NonNull List<IDiskRepresenter> diskList, @Nullable String path, @Nullable String mask)
     {
         this.context = context.getApplicationContext();
-        this.disks = disks;
+        this.disks = new DiskContainer(diskList);
         fileList = new ArrayList();
         visibleFileList = fileList;
+        pathSegments = new ArrayList();
 
         if(path != null) {
-            StorageUtils.CloudFile cf=StorageUtils.parseFileName(path, disks);
-            currentDisk = cf.diskRepresenter;
-            pathSegments = new ArrayList(cf.uri.getPathSegments());
+            DiskContainer.CloudFile cf=disks.parseFileName(path);
+            if(cf!=null) {
+                currentDisk = cf.diskRepresenter;
+                pathSegments.addAll(cf.uri.getPathSegments());
+            }
         }
-        else
-            pathSegments = new ArrayList();
 
         filter.setMask(mask);
 
@@ -110,7 +113,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         if(diskListVisible)
         {  // shows disk list
             view.showProgress(false);
-            view.setDiskList(disks);
+            view.setDiskList(disks.getDiskList());
         }
         else
         { // shows file list
@@ -148,7 +151,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     {
         if(fi.isFolder())
         {
-            if(fi.name().equals(".."))
+            if(fi.name().equals(UP_DIR_NAME))
             {
                 if(pathSegments.size()==0)
                     selectDiskList();
@@ -310,10 +313,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     {
         diskListVisible=false;
 
-        if(cleanContext) {
+        if(cleanContext) { // clean before update
             visibleFileList.clear();
             visibleFileList.add(createUpdir());
-
         }
 
         progressVisible=true;
@@ -336,13 +338,15 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                     @Override
                     public List<IDiskIO.ResourceInfo> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
                         ArrayList<IDiskIO.ResourceInfo> list = new ArrayList<IDiskIO.ResourceInfo>();
-                        list.add(createUpdir());
+                        //list.add(createUpdir());
                         if(resourceInfo.content()!=null)
                             list.addAll(
                                     filter.filterList(resourceInfo.content())
                                     );
-                        else
+                        else {
+                            list.add(createUpdir());
                             throw new Exception(context.getText(R.string.cant_read_dir).toString());
+                        }
 
                         Collections.sort(list, new Comparator<IDiskIO.ResourceInfo>()
                         {
@@ -361,6 +365,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                             }
                         });
 
+                        list.add(0,createUpdir());
                         return list;
                     }
                 })
@@ -419,7 +424,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
             @Override
             public String name() {
-                return "..";
+                return UP_DIR_NAME;
             }
 
             @Override
