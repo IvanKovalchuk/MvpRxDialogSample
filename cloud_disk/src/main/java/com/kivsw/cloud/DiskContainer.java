@@ -6,9 +6,9 @@ import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -30,13 +30,13 @@ public class DiskContainer {
     };
     public DiskContainer(IDiskRepresenter... disks)
     {
-        diskList = Collections.synchronizedList(new ArrayList(disks.length));
+        diskList = new CopyOnWriteArrayList();//Collections.synchronizedList(new ArrayList(disks.length));
+
         addDisk(disks);
     };
     public void addDisk(IDiskRepresenter... disks)
     {
-        for(IDiskRepresenter item:disks)
-           diskList.add(item);
+        diskList.addAll(Arrays.asList(disks));
     };
 
     public List<IDiskRepresenter> getDiskList()
