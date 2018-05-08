@@ -24,10 +24,17 @@ public class LocalDiskRepresenter extends BaseDiskRepresenter {
         return new LocalDiskRepresenter(context, new LocalDiskIo(external), "extSD", "External SD", BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd));
     }*/
 
-    public static String ROOTFS_SCHEME ="file", NAME="Local FS";
-    public LocalDiskRepresenter(Context context)
+    public static String ROOTFS_SCHEME ="file", NAME_ROOT="Root FS";
+    public static String APPFS_SCHEME ="app", NAME_PRIVATE_DIR="Private directory";
+    static public LocalDiskRepresenter createRootFS(Context context)
     {
-        super(new LocalDiskIo(), ROOTFS_SCHEME, NAME,
+        return new LocalDiskRepresenter(context, new LocalDiskIo(), ROOTFS_SCHEME, NAME_ROOT,
+                BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd));
+    }
+    static public LocalDiskRepresenter createPrivateStorageFS(Context context)
+    {
+        String dir=context.getFilesDir().getAbsolutePath();
+        return new LocalDiskRepresenter(context, new LocalDiskIo(dir), APPFS_SCHEME, NAME_PRIVATE_DIR,
                 BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd));
     }
 
