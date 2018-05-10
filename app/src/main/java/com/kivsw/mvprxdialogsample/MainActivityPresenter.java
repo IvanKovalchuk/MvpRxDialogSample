@@ -6,8 +6,10 @@ import android.os.Environment;
 import android.text.Editable;
 import android.text.InputType;
 
+import com.kivsw.cloud.DiskContainer;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.StorageUtils;
+import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
 import com.kivsw.cloudcache.CloudCache;
@@ -319,7 +321,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
 
     private ArrayList<IDiskRepresenter> disks=null;
-    ArrayList<IDiskRepresenter> getDisks()
+    DiskContainer getDisks()
     {
         if(disks==null) {
             disks = new ArrayList();
@@ -327,11 +329,13 @@ public class MainActivityPresenter implements Contract.IPresenter {
         /*disks.add(LocalDiskRepresenter.getExternalSD(view.getApplicationContext()));*/
            // HashSet<String> mountPoints= LocalDiskIo.getExternalMounts();
             disks.addAll(StorageUtils.getSD_list(view.getApplicationContext()));
+            disks.add(LocalDiskRepresenter.createPrivateStorageFS(view));
+
             disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
             disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
         }
 
-        return disks;
+        return new DiskContainer(disks);
     }
 
 }

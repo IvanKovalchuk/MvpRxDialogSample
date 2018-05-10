@@ -75,10 +75,10 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         this.view = null;
     };
 
-    protected MvpRxFileDialogPresenter(Context context, @NonNull List<IDiskRepresenter> diskList, @Nullable String path, @Nullable String mask)
+    protected MvpRxFileDialogPresenter(Context context, @NonNull DiskContainer diskList, @Nullable String path, @Nullable String mask)
     {
         this.context = context.getApplicationContext();
-        this.disks = new DiskContainer(diskList);
+        this.disks = (diskList);
         fileList = new ArrayList();
         visibleFileList = fileList;
         pathSegments = new ArrayList();

@@ -141,7 +141,6 @@ public class StorageUtils {
         Bitmap bmp=BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd);
 
         res.add(LocalDiskRepresenter.createRootFS(context));
-        res.add(LocalDiskRepresenter.createPrivateStorageFS(context));
 
         for(String path:paths)
         {

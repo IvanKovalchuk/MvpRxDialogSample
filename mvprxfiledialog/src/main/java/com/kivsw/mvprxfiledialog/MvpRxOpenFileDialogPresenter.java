@@ -5,9 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
 
-import com.kivsw.cloud.disk.IDiskRepresenter;
-
-import java.util.List;
+import com.kivsw.cloud.DiskContainer;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
@@ -19,7 +17,7 @@ import io.reactivex.annotations.Nullable;
 public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
 
     public static MvpRxOpenFileDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
-                                                            @NonNull List<IDiskRepresenter> disks, @Nullable String defaultPath, @Nullable String mask)
+                                                            @NonNull DiskContainer disks, @Nullable String defaultPath, @Nullable String mask)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.icodir);
@@ -34,7 +32,7 @@ public class MvpRxOpenFileDialogPresenter extends MvpRxFileDialogPresenter {
         return presenter;
     }
 
-    private MvpRxOpenFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask)
+    private MvpRxOpenFileDialogPresenter(Context context, DiskContainer disks, String path, String mask)
     {
         super(context, disks, path, mask);
     }

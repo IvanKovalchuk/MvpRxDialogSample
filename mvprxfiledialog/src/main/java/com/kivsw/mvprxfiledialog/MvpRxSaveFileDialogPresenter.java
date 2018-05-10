@@ -5,12 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
 
+import com.kivsw.cloud.DiskContainer;
 import com.kivsw.cloud.disk.IDiskIO;
-import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
-
-import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
@@ -27,7 +25,7 @@ import io.reactivex.functions.Function;
 
 public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
     public static MvpRxSaveFileDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
-                                                            @NonNull List<IDiskRepresenter> disks, @Nullable String defaultPath, @Nullable String mask, @Nullable String defaultExt)
+                                                            @NonNull DiskContainer disks, @Nullable String defaultPath, @Nullable String mask, @Nullable String defaultExt)
     {
 
         Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_save);
@@ -45,7 +43,7 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
     private String defaultExt=null;
 
 
-    private MvpRxSaveFileDialogPresenter(Context context, List<IDiskRepresenter> disks, String path, String mask, String defaultExt)
+    private MvpRxSaveFileDialogPresenter(Context context, DiskContainer disks, String path, String mask, String defaultExt)
     {
         super(context, disks, path, mask);
 
