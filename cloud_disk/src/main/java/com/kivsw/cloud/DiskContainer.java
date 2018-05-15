@@ -164,6 +164,14 @@ public class DiskContainer {
             Observable.error(new Exception("incorrect path "+localPath));
 
         return cloudFile.diskRepresenter.getDiskIo().uploadFile(cloudFile.getPath(), localFile.uri.getPath());
+    };
+
+    public boolean isLocalStorage(String urlPath) throws Exception
+    {
+        CloudFile cloudFile=parseFileName(urlPath);
+        if(cloudFile==null)
+            throw new Exception("incorrect path "+urlPath);
+        return cloudFile.diskRepresenter.getDiskIo().isLocalStorage();
     }
 
     static public class CloudFile

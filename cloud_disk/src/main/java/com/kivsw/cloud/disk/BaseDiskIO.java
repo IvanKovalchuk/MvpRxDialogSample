@@ -382,6 +382,11 @@ public abstract class BaseDiskIO implements IDiskIO {
     };
 
     @Override
+    public boolean isLocalStorage()
+    {
+        return false;
+    };
+    @Override
     public String convertToLocalPath(String path)
     {return null;};
 

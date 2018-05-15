@@ -364,6 +364,11 @@ public class LocalDiskIo implements IDiskIO {
     }
 
     @Override
+    public boolean isLocalStorage() {
+        return true;
+    }
+
+    @Override
     public String convertToLocalPath(String devicePath)
     {
         return correctPath(devicePath);

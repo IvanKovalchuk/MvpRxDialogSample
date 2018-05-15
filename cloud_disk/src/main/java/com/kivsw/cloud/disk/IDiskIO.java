@@ -29,6 +29,8 @@ public interface IDiskIO {
     Observable<Integer> uploadFile(String remotePath, String localPath);
 
     String getErrorString(Throwable throwable); // convert an exception into readable form
+
+    boolean isLocalStorage();
     String convertToLocalPath(String path); // returns path in local file system or null
 
 
