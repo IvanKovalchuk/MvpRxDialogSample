@@ -430,7 +430,9 @@ public abstract class BaseDiskIO implements IDiskIO {
                     {
                         int r=super.read(buffer, byteOffset, byteCount);
                         if(r!=-1) readCount+=r;
-                        int p=(int)(100*readCount / fileLength);
+                        int p=0;
+                        if(fileLength!=0)
+                            p=(int)(100*readCount / fileLength);
                         if(p!=percent) {
                             percent = p;
                             progressObservable.onNext(Integer.valueOf(percent));
