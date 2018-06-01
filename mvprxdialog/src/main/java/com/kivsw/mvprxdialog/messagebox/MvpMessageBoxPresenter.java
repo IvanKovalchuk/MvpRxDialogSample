@@ -31,6 +31,8 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
     @Override
     public void setUI(@NonNull Contract.IView view) {
         this.view = (MvpMessageBox)view;
+        if(needToClose)
+            cancelMessageBox();
     }
 
     @Override
@@ -55,6 +57,14 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
     @Override
     public void onCancel() {
         onPress(CANCEL_BUTTON);
+    }
+
+    private boolean needToClose=false;
+    public void cancelMessageBox()
+    {
+        needToClose = true;
+        if(view!=null)
+            onPress(CANCEL_BUTTON);
     }
 
     SingleEmitter singleEmmiter=null;
@@ -83,5 +93,7 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
 
         return presenter;
     }
+
+
 
 }

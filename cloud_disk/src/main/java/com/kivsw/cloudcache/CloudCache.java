@@ -218,7 +218,7 @@ public class CloudCache {
                         @Override
                         public UploadParams call() throws Exception {
                             params.cfi = cacheData.get(remoteFilePath); // TODO make sure it's not the main thread
-                            if (params.cfi == null)
+                            if (params==null || params.cfi==null)
                                    throw new Exception("no such a file in cache " + remoteFilePath);
                             return params;
                         }
@@ -245,43 +245,7 @@ public class CloudCache {
                         }
                     });
 
-       /* return
-                Single.fromCallable(new Callable<UploadParams>() {
-                            @Override
-                            public UploadParams call() throws Exception {
-                                params.cfi = cacheData.get(remoteFilePath); // TODO make sure it's not the main thread
-                                if (params.cfi == null)
-                                    throw new Exception("no such a file in cache " + remoteFilePath);
 
-                                params.cloudFile = disks.parseFileName(remoteFilePath);
-                                if (params.cloudFile.diskRepresenter == null)
-                                    throw new Exception("incorrect path " + remoteFilePath);
-
-                                params.disk = params.cloudFile.diskRepresenter.getDiskIo();
-                                return params;
-                            }
-                        })
-                    .subscribeOn(Schedulers.io())
-                    .flatMapObservable(new Function<UploadParams, ObservableSource<Integer>>() {
-                        @Override
-                        public ObservableSource<Integer> apply(@NonNull UploadParams uploadParams) throws Exception {
-                            return params.disk.uploadFile(params.cloudFile.getPath(), params.cfi.localName);
-                        }
-                    })
-                    .observeOn(Schedulers.io())
-                    .doOnComplete(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            params.disk.getResourceInfo(params.cloudFile.getPath()) // update file's time
-                                    .subscribe(new Consumer<IDiskIO.ResourceInfo>() {
-                                        @Override
-                                        public void accept(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
-                                            params.cfi.modifiedTime = resourceInfo.modified();
-                                            cacheData.put(params.cfi.remoteName, params.cfi);//doSaveCacheMap();
-                                        }
-                                    });
-                        }
-                    });*/
     }
 
 
