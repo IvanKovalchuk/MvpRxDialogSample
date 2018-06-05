@@ -82,13 +82,17 @@ implements Contract.IView
     public void onStart()
     {
         super.onStart();
-        getPresenter().setUI(this);
+        if(getPresenter()!=null)
+             getPresenter().setUI(this);
+        else
+            dismiss();
     }
     @Override
     public void onStop()
     {
         super.onStop();
-        getPresenter().removeUI();
+        if(getPresenter()!=null)
+          getPresenter().removeUI();
     }
 
     @Override
