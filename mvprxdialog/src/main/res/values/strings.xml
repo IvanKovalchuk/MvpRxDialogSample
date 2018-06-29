@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">MvpRxDialog</string>
 
     <string name="dont_show_again">don\'t show this message again</string>
     <string name="Confirmation">Confirmation</string>
@@ -7,6 +6,4 @@
     <string name="Error">"Error"</string>
     <string name="Information">"Information"</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

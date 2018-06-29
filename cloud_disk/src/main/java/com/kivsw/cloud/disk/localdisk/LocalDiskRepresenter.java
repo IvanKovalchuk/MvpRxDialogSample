@@ -33,7 +33,7 @@ public class LocalDiskRepresenter extends BaseDiskRepresenter {
     }
     static public LocalDiskRepresenter createPrivateStorageFS(Context context)
     {
-        String dir=context.getFilesDir().getAbsolutePath();
+        String dir=context.getFilesDir().getParent();//getAbsolutePath();
         return new LocalDiskRepresenter(context, new LocalDiskIo(dir), APPFS_SCHEME, NAME_PRIVATE_DIR,
                 BitmapFactory.decodeResource(context.getResources(), R.drawable.micro_sd));
     }
