@@ -183,9 +183,10 @@ public class DiskContainer {
 
     public CloudFile parseFileName(String path)
     {
-
         Uri uri = Uri.parse(path);
         String scheme = uri.getScheme();
+        if(scheme==null)
+            return parseFileName(DEFAULT_SCHEME+"://"+ path);
 
         IDiskRepresenter diskRepresenter=findDisk( scheme);
         if(diskRepresenter==null)
@@ -200,8 +201,8 @@ public class DiskContainer {
     final static String DEFAULT_SCHEME= LocalDiskRepresenter.ROOTFS_SCHEME;
     protected IDiskRepresenter findDisk(String scheme)
     {
-        if(scheme==null)
-            scheme = DEFAULT_SCHEME;
+        /*if(scheme==null)
+            scheme = DEFAULT_SCHEME;*/
         for(IDiskRepresenter dsk:diskList)
             if(dsk.getScheme().equals(scheme))
                 return dsk;
