@@ -2,6 +2,7 @@ package com.kivsw.cloud;
 
 import android.net.Uri;
 
+import com.kivsw.cloud.disk.BaseDiskIO;
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
@@ -172,6 +173,11 @@ public class DiskContainer {
         if(cloudFile==null)
             throw new Exception("incorrect path "+urlPath);
         return cloudFile.diskRepresenter.getDiskIo().isLocalStorage();
+    }
+
+    public String errorToString(Throwable e)
+    {
+        return BaseDiskIO.errorToString(e);
     }
 
     static public class CloudFile

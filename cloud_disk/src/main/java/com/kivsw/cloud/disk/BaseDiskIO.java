@@ -161,13 +161,17 @@ public abstract class BaseDiskIO implements IDiskIO {
     @Override
     public String getErrorString(Throwable e)
     {
+        return errorToString(e);
+    }
+    public static String errorToString(Throwable e)
+    {
 
         if(e instanceof CompositeException)
         {
             List<Throwable> list=((CompositeException)e).getExceptions();
             StringBuilder result=new StringBuilder();
             for(Throwable t:list) {
-                result.append(getErrorString(t));
+                result.append(errorToString(t));
                 result.append("\n");
             };
 

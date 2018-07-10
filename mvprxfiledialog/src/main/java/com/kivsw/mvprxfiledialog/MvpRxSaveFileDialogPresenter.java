@@ -74,12 +74,11 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
         final String fileName= getSelectedFile();
         if(fileName==null) return;
 
-        final String filePath= getCurrentDir();
-
+        final String filePath= fileSystemPath.getFullPath();
 
         view.showProgress(true);
 
-        currentDisk.getDiskIo().getResourceInfo(filePath) // read dir content
+        getDisks().getResourceInfo(filePath) // read dir content
                 .flatMap(new Function<IDiskIO.ResourceInfo, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {

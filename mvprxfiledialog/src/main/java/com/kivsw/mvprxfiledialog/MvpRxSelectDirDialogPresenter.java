@@ -50,7 +50,7 @@ public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
      */
     protected String getSelectedFullFileName()
     {
-        String res=currentDisk.getScheme()+"://"+getCurrentDir();
+        String res=fileSystemPath.getFullPath();//currentDisk.getScheme()+"://"+getCurrentDir();
         return res;
     }
 

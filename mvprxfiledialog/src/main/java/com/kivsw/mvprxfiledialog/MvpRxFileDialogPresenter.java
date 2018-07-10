@@ -10,6 +10,8 @@ import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
+import com.kivsw.mvprxfiledialog.data.FileSystemPath;
+import com.kivsw.mvprxfiledialog.data.IFileSystemPath;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +46,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     private DiskContainer disks;
     private List<IDiskIO.ResourceInfo> fileList=null, visibleFileList=null;
     private boolean progressVisible=true;
-    private List<String> pathSegments;
-    protected IDiskRepresenter currentDisk=null;
+    /*private List<String> pathSegments;
+    protected IDiskRepresenter currentDisk=null;*/
+    protected IFileSystemPath fileSystemPath;
     protected FileFilter filter=new FileFilter();
 
     protected  MaybeEmitter<String> emmiter=null;
@@ -66,6 +69,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     @Override
     public void setUI(@NonNull Contract.IView view) {
         this.view = (MvpRxFileDialog)view;
+        this.view.setDiskContainer(disks);
         setViewData(null);
     }
 
@@ -81,25 +85,24 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         this.disks = (diskList);
         fileList = new ArrayList();
         visibleFileList = fileList;
-        pathSegments = new ArrayList();
 
-        if(path != null) {
-            DiskContainer.CloudFile cf=disks.parseFileName(path);
-            if(cf!=null) {
-                currentDisk = cf.diskRepresenter;
-                pathSegments.addAll(cf.uri.getPathSegments());
-            }
-        }
+        fileSystemPath = new FileSystemPath(diskList);
+        fileSystemPath.setFullPath(path);
 
         filter.setMask(mask);
 
-        if(currentDisk!=null)
+        if(fileSystemPath.getCurrentDisk()!=null)
             updateDir(true, null);
         else
             selectDiskList();
 
         registerDialogPresenter();
     };
+
+
+    public DiskContainer getDisks() {
+        return disks;
+    }
 
     /**
      * set all UI data
@@ -118,8 +121,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         else
         { // shows file list
             view.setFileList(visibleFileList);
-            view.setPath(getCurrentDir() + filter.getWildCard());
-            view.setDisk(currentDisk);
+            view.setPath(fileSystemPath, filter.getWildCard());
             view.showProgress(progressVisible);
 
             if (itemToPos != null)
@@ -147,23 +149,33 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         return false;
     }
 
+    public void onDiskChange(IDiskRepresenter newCurrentDisk)
+    {
+        /*currentDisk = newCurrentDisk;
+        pathSegments.clear();*/
+        if(fileSystemPath.getCurrentDisk().getScheme().equals(newCurrentDisk.getScheme()))
+            return;
+        fileSystemPath.setFullPath(newCurrentDisk.getScheme()+":///");
+        updateDir(true, null);
+    }
+
     public void onFileClick(IDiskIO.ResourceInfo fi)
     {
         if(fi.isFolder())
         {
             if(fi.name().equals(UP_DIR_NAME))
             {
-                if(pathSegments.size()==0)
+                if(fileSystemPath.getDepth()==0)
                     selectDiskList();
                 else
                 {
-                    String dir= pathSegments.remove(pathSegments.size()-1);
+                    String dir= fileSystemPath.up();
                     updateDir(true, dir);
                 }
             }
             else
             {
-                pathSegments.add(fi.name());
+                fileSystemPath.addDir(fi.name());
                 updateDir(true, null);
             }
         }
@@ -191,9 +203,9 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                     public CompletableSource apply(@NonNull Integer button) throws Exception {
                         if(button.intValue() == MvpMessageBoxPresenter.OK_BUTTON) {
                             if(fi.isFolder())
-                                return currentDisk.getDiskIo().deleteDir(getCurrentDir()+fi.name());
+                                return disks.deleteDir(fileSystemPath.getFullPath()+fi.name());
                             else
-                                return currentDisk.getDiskIo().deleteFile(getCurrentDir()+fi.name());
+                                return disks.deleteFile(fileSystemPath.getFullPath()+fi.name());
                         }
                         else
                             return Completable.complete();
@@ -232,11 +244,11 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                     @Override
                     public CompletableSource apply(@NonNull String newName) throws Exception {
                         view.showProgress(true);
-                        String  oldName=getCurrentDir()+fi.name();
-                        newName=getCurrentDir()+newName;
+                        String  oldName=fileSystemPath.getFullPath()+fi.name();//getCurrentDir()+fi.name();
+                        newName=fileSystemPath.getFullPath()+newName;//getCurrentDir()+newName;
                         name.append(newName);
-                        if(fi.isFolder())  return currentDisk.getDiskIo().renameDir(oldName, newName);
-                         else   return currentDisk.getDiskIo().renameFile(oldName, newName);
+                        if(fi.isFolder())  return disks.renameDir(oldName, newName);
+                         else   return disks.renameFile(oldName, newName);
                     }
                 })
                 .subscribe(new CompletableObserver() {
@@ -271,7 +283,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
                         name.append(newDir);
                         view.showProgress(true);
-                        return  currentDisk.getDiskIo().createDir(getCurrentDir()+newDir);
+                        return  disks.createDir(fileSystemPath.getFullPath()+newDir);
                     }
                 })
                 .subscribe(new CompletableObserver() {
@@ -324,14 +336,14 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
             updateDirDisposable.dispose();
         updateDirDisposable=null;
 
-        final IDiskIO disk=currentDisk.getDiskIo();
-
-        disk.authorizeIfNecessary()
+/*        final IDiskIO disk=currentDisk.getDiskIo();
+        disk.authorizeIfNecessary()*/
+        disks.authorizeIfNecessary(fileSystemPath.getFullPath())
                 .andThen(Single.just("") )
                 .flatMap(new Function<String, SingleSource<IDiskIO.ResourceInfo>>() {
                     @Override
                     public SingleSource<IDiskIO.ResourceInfo> apply(@NonNull String s) throws Exception {
-                        return disk.getResourceInfo(getCurrentDir() );
+                        return disks.getResourceInfo(fileSystemPath.getFullPath());
                     }
                 })
                 .map(new Function<IDiskIO.ResourceInfo, List<IDiskIO.ResourceInfo>>() {
@@ -387,7 +399,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        String err=disk.getErrorString(e);
+                        String err=disks.errorToString(e);
                         if(view!=null)
                            view.showMessage(err);
                         progressVisible=false;
@@ -445,7 +457,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         return ri;
     }
 
-    protected String getCurrentDir()
+    /*protected String getCurrentDir()
     {
         StringBuilder res = new StringBuilder();
         for(String segment:pathSegments) {
@@ -454,7 +466,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
         }
         res.append('/');
         return res.toString();
-    };
+    };*/
 
     /**
      *
@@ -477,14 +489,15 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
      */
     protected String getSelectedFullFileName()
     {
-        String res=currentDisk.getScheme()+"://"+getCurrentDir() + getSelectedFile();
+        String res=fileSystemPath.getFullPath()+getSelectedFile();//currentDisk.getScheme()+"://"+getCurrentDir() + getSelectedFile();
         return res;
     }
 
     public void onDiskClick(IDiskRepresenter dsk,  int position)
     {
-        currentDisk = dsk;
-        pathSegments.clear();
+        /*currentDisk = dsk;
+        pathSegments.clear();*/
+        fileSystemPath.setFullPath(dsk.getScheme()+":///");
         updateDir(true,null);
     }
 

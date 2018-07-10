@@ -1,6 +1,8 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
@@ -9,17 +11,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.kivsw.cloud.DiskContainer;
 import com.kivsw.cloud.disk.IDiskIO;
 import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.mvprxdialog.BaseMvpFragment;
 import com.kivsw.mvprxdialog.Contract;
+import com.kivsw.mvprxfiledialog.data.IFileSystemPath;
 
 import java.util.List;
 
@@ -32,6 +37,7 @@ import java.util.List;
 public class MvpRxFileDialog extends BaseMvpFragment
         implements FileListView.OnFileMenuItemClick, Contract.IView
 {
+
     public MvpRxFileDialog() {
         // Required empty public constructor
     }
@@ -56,14 +62,15 @@ public class MvpRxFileDialog extends BaseMvpFragment
     }
 
     private View rootView;
-    private TextView pathTextView, diskTextView;
+    private Spinner diskSpinner;
+    private TextView pathTextView;
     private EditText fileNameEdit;
     private FileListView fileListView;
     private ProgressBar progress;
     private Button okButton, cancelButton;
-    private LinearLayout fileNameLayout, pathLayout;
-    private LinearLayout diskLayout;
-    private ImageView diskImageView;
+    private LinearLayout fileNameLayout;
+
+    private DiskContainer disks;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,11 +115,9 @@ public class MvpRxFileDialog extends BaseMvpFragment
         fileListView.setOnMenuItemClickListener(this);
 
         fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
-        pathLayout = (LinearLayout) rootView.findViewById(R.id.pathLayout);
 
-        diskLayout = (LinearLayout)  rootView.findViewById(R.id.diskLayout);
-        diskImageView = (ImageView)    rootView.findViewById(R.id.diskImageView);
-        diskTextView = (TextView)    rootView.findViewById(R.id.diskTextView);
+        diskSpinner = (Spinner) rootView.findViewById(R.id.diskSpinner);
+        //initDiskSpinner();
 
         progress = (ProgressBar) rootView.findViewById(R.id.progressBar);
         //showProgress(false);
@@ -136,6 +141,36 @@ public class MvpRxFileDialog extends BaseMvpFragment
         return rootView;
     }
 
+    private void initDiskSpinner()
+    {
+        final List<IDiskRepresenter> diskList = disks.getDiskList();
+        Drawable diskIcons[]=new Drawable[diskList.size()];
+        String diskName[] = new String[diskList.size()];
+        for(int i=0;i<diskList.size();i++)
+        {
+            IDiskRepresenter disk = diskList.get(i);
+            diskIcons[i] = new BitmapDrawable(getContext().getResources(), disk.getIcon());
+            diskName[i] = disk.getName();
+        }
+
+        IconSpinnerAdapter adapter=new IconSpinnerAdapter(getContext(), diskName, diskIcons);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        diskSpinner.setAdapter(adapter);
+        diskSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(position>=0 && position<diskList.size())
+                    //зщы
+                   ((MvpRxFileDialogPresenter)getPresenter()).onDiskChange(diskList.get(position));
+
+            }
+
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
+        });
+    }
+
     @Override
     public void onResume() {
         ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
@@ -153,15 +188,26 @@ public class MvpRxFileDialog extends BaseMvpFragment
         return true;
     }
 
-    public void setPath(String path)
+    public void setPath(IFileSystemPath fileSystemPath, String wildCard)
     {
-        pathTextView.setText(path);
+        int diskIndex=0;
+        for(diskIndex = disks.getDiskList().size()-1; diskIndex>=0; diskIndex--) {
+            IDiskRepresenter dr = disks.getDiskList().get(diskIndex);
+            if(dr.getScheme().equals(fileSystemPath.getCurrentDisk().getScheme()))
+                break;
+        };
+        if(diskIndex!=diskSpinner.getSelectedItemPosition())
+            diskSpinner.setSelection(diskIndex);
+
+        pathTextView.setText(fileSystemPath.getPath()+wildCard);
     }
-    public void setDisk(IDiskRepresenter disk)
+    public void setDiskContainer(DiskContainer disks)
     {
 
-        diskImageView.setImageBitmap(disk.getIcon());
-        diskTextView.setText(disk.getName());
+        this.disks = disks;
+        initDiskSpinner();
+        /*diskImageView.setImageBitmap(disk.getIcon());
+        diskTextView.setText(disk.getName());*/
 
     }
 
@@ -189,8 +235,8 @@ public class MvpRxFileDialog extends BaseMvpFragment
     }
     public void setFileList(List<IDiskIO.ResourceInfo> fileList)
     {
-        pathLayout.setVisibility(View.VISIBLE);
-        diskLayout.setVisibility(View.VISIBLE);
+        diskSpinner.setVisibility(View.VISIBLE);
+        pathTextView.setVisibility(View.VISIBLE);
         if(FileNameEditVisible)
             fileNameLayout.setVisibility(View.VISIBLE);
         else
@@ -200,8 +246,8 @@ public class MvpRxFileDialog extends BaseMvpFragment
 
     public void setDiskList(List<IDiskRepresenter> disks)
     {
-        pathLayout.setVisibility(View.GONE);
-        diskLayout.setVisibility(View.GONE);
+        diskSpinner.setVisibility(View.GONE);
+        pathTextView.setVisibility(View.GONE);
         fileNameLayout.setVisibility(View.GONE);
         fileListView.setDiskList(disks);
     }

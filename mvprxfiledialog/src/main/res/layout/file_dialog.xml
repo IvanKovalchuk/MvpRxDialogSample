@@ -1,76 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout android:id="@+id/fileDialog"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:id="@+id/fileDialog">
+              android:orientation="vertical">
 
-    <include layout="@layout/header_layout"
+    <include
         android:id="@+id/includeHeader"
+        layout="@layout/header_layout"/>
+
+
+    <Spinner
+        android:id="@+id/diskSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         />
 
-    <LinearLayout
-        android:id="@+id/diskLayout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <TextView
+        android:id="@+id/currentPath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/diskImageView"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-
-            android:layout_marginBottom="@dimen/margin_size"
-            android:layout_marginLeft="@dimen/margin_size"
-            android:layout_marginRight="@dimen/margin_size"
-            android:layout_marginTop="@dimen/margin_size"
-            />
-
-        <TextView
-            android:id="@+id/diskTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:layout_gravity="center_vertical"
-            android:text="TextView"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_size"
-        android:layout_marginRight="@dimen/margin_size"
-        android:id="@+id/pathLayout"
-        >
-<!--
-        <TextView
-            android:id="@+id/dlStatusDialogText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/path" /> -->
-
-        <TextView
-            android:id="@+id/currentPath"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </LinearLayout>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        />
 
     <FrameLayout
-        android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/margin_size"
         android:layout_marginLeft="@dimen/margin_size"
         android:layout_marginRight="@dimen/margin_size"
         android:layout_marginTop="@dimen/margin_size"
-        android:layout_marginBottom="@dimen/margin_size"
+        android:layout_weight="1"
         >
 
         <com.kivsw.mvprxfiledialog.FileListView
@@ -82,22 +47,25 @@
         <ProgressBar
             android:id="@+id/progressBar"
 
-            android:progress="25"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:progress="25"/>
 
     </FrameLayout>
 
     <LinearLayout
         android:id="@+id/fileNameLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        >
 
         <TextView
             android:id="@+id/dlTextView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/file" />
+            android:text="@string/file"/>
 
         <EditText
             android:id="@+id/editFileName"
@@ -117,7 +85,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:gravity="center_horizontal" >
+        android:layout_margin="5dp"
+        android:gravity="center_horizontal">
 
         <Button
             android:id="@+id/okButton"
@@ -125,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="OK" />
+            android:text="OK"/>
 
         <Button
             android:id="@+id/cancelButton"
@@ -133,7 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel" />
+            android:text="Cancel"/>
 
     </LinearLayout>
 
