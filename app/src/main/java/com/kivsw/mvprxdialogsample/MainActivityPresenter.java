@@ -73,9 +73,9 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     public void showDialog()
     {
-        Bitmap icon = BitmapFactory.decodeResource(view.getResources(), R.mipmap.ic_launcher_round);
+        //Bitmap icon = BitmapFactory.decodeResource(view.getResources(), R.mipmap.ic_launcher_round);
         MvpMessageBoxBuilder.newInstance()
-                .setIcon(icon)
+                .setIcon(R.mipmap.ic_launcher_round)
                 .setText("A Title", "A message")
                 .showCancelButton()
                 .showExtraButton()

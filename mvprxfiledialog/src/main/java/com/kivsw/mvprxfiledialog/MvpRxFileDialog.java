@@ -1,6 +1,5 @@
 package com.kivsw.mvprxfiledialog;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -50,11 +49,11 @@ public class MvpRxFileDialog extends BaseMvpFragment
      * @return A new instance of fragment MvpRxFileDialog.
      */
 
-    public static MvpRxFileDialog newInstance(long id, Bitmap icon, String title) {
+    public static MvpRxFileDialog newInstance(long id, int iconId, String title) {
         MvpRxFileDialog fragment = new MvpRxFileDialog();
         Bundle args = new Bundle();
         args.putLong(PRESENTER_ID, id);
-        args.putParcelable(ICON_PARAM,icon);
+        args.putInt(ICON_PARAM,iconId);
         args.putString(TITLE_PARAM,title);
 
         fragment.setArguments(args);
@@ -83,10 +82,15 @@ public class MvpRxFileDialog extends BaseMvpFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView= inflater.inflate(R.layout.file_dialog, container, false);
+        /*rootView.setSaveEnabled(false);
+        rootView.setId(View.NO_ID);*/
 
         setupTitle(rootView);
 
+        View header = rootView.findViewById(R.id.includeHeader);
+
         pathTextView = (TextView) rootView.findViewById(R.id.currentPath);
+
         fileNameEdit = (EditText) rootView.findViewById(R.id.editFileName);
         fileNameEdit.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -117,12 +121,15 @@ public class MvpRxFileDialog extends BaseMvpFragment
         fileNameLayout = (LinearLayout) rootView.findViewById(R.id.fileNameLayout);
 
         diskSpinner = (Spinner) rootView.findViewById(R.id.diskSpinner);
+        diskSpinner.setId(View.NO_ID);
         //initDiskSpinner();
 
         progress = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        progress.setId(View.NO_ID);
         //showProgress(false);
 
         okButton = (Button)  rootView.findViewById(R.id.okButton);
+        okButton.setId(View.NO_ID);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,6 +138,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
         });
 
         cancelButton = (Button)  rootView.findViewById(R.id.cancelButton);
+        cancelButton.setId(View.NO_ID);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +146,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
             }
         });
 
+        rootView.setId(View.NO_ID);
         return rootView;
     }
 
@@ -155,7 +164,8 @@ public class MvpRxFileDialog extends BaseMvpFragment
 
         IconSpinnerAdapter adapter=new IconSpinnerAdapter(getContext(), diskName, diskIcons);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);//simple_spinner_dropdown_item);//.simple_spinner_item);// simple_spinner_dropdown_item);
+
         diskSpinner.setAdapter(adapter);
         diskSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override
@@ -179,6 +189,11 @@ public class MvpRxFileDialog extends BaseMvpFragment
         getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
 
         super.onResume();
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -12,13 +12,15 @@ import android.widget.TextView;
 /**
  * Created by ivan on 5/11/16.
  */
-public class IconSpinnerAdapter extends ArrayAdapter<String> {
+public class IconSpinnerAdapter extends ArrayAdapter<String>
+ {
 
     Drawable[] icons=null;
 
     public IconSpinnerAdapter(Context context, /*int textViewResourceId,*/
                               String[] objects, Drawable[] icons) {
-        super(context, R.layout.row, objects);
+        super(context, R.layout.icon_spinner_adapter_item, objects);
+        //R.layout.support_simple_spinner_dropdown_item
         this.icons = icons;
     }
 
@@ -40,7 +42,8 @@ public class IconSpinnerAdapter extends ArrayAdapter<String> {
             row =convertView;
         else {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater.inflate(R.layout.row, parent, false);
+            //icon_spinner_adapter_item = inflater.inflate(R.layout.icon_spinner_adapter_item, parent, false);
+            row = inflater.inflate(R.layout.icon_spinner_adapter_item, null);
         }
 
         TextView label=(TextView)row.findViewById(R.id.textView);

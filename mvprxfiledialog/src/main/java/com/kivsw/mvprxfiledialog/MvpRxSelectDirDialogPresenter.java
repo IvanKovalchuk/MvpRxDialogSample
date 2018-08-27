@@ -1,8 +1,6 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.DiskContainer;
@@ -20,12 +18,12 @@ public class MvpRxSelectDirDialogPresenter extends MvpRxFileDialogPresenter {
     public static MvpRxSelectDirDialogPresenter createDialog(@NonNull Context context, @NonNull FragmentManager fragmentManager,
                                                              @NonNull DiskContainer disks, @Nullable String defaultPath, @Nullable String mask)
     {
-        Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_folder);
+       // Bitmap ico = BitmapFactory.decodeResource(context.getResources(), );
         String title = context.getResources().getText(R.string.choose_directory).toString();
         MvpRxSelectDirDialogPresenter presenter = new MvpRxSelectDirDialogPresenter(context, disks, defaultPath, mask);
         long id= presenter.getDialogPresenterId();
 
-        MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
+        MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id,R.drawable.ico_folder , title);
 
         fragment.show(fragmentManager, String.valueOf(id));
 

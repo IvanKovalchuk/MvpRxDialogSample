@@ -1,17 +1,17 @@
 package com.kivsw.mvprxdialogsample;
 
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 import com.kivsw.mvprxdialog.Contract;
-import com.kivsw.mvprxdialogsample.R;
 
 public class MainActivity extends AppCompatActivity
         implements Contract.IView
@@ -120,6 +120,25 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
         getPresenter().setUI(null);
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        int ds=getBundleSize(outState);
+
+        if(ds>1042*1024)
+            outState.clear();
+    }
+
+
+    public static int getBundleSize(Bundle b)
+    {
+        Parcel parcel = Parcel.obtain(); //new Parcel();
+        b.writeToParcel(parcel, 0);
+        int ds=parcel.dataSize();
+        return ds;
     }
 
     public void showMessage(String message)

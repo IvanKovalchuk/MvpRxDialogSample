@@ -10,6 +10,7 @@ import com.kivsw.mvprxdialog.Contract;
 import com.kivsw.mvprxdialog.inputbox.MvpInputBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxBuilder;
 import com.kivsw.mvprxdialog.messagebox.MvpMessageBoxPresenter;
+import com.kivsw.mvprxfiledialog.data.FileFilter;
 import com.kivsw.mvprxfiledialog.data.FileSystemPath;
 import com.kivsw.mvprxfiledialog.data.IFileSystemPath;
 

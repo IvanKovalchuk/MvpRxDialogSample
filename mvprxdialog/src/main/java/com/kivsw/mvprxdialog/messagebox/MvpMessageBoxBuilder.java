@@ -1,6 +1,5 @@
 package com.kivsw.mvprxdialog.messagebox;
 
-import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 
 /**
@@ -13,19 +12,19 @@ public class MvpMessageBoxBuilder {
         return new MvpMessageBoxBuilder();
     };
 
-    private Bitmap icon;
+    private int iconRes=0;
     private String title=null,  msg=null;
     private  boolean askDontShowAgain=false;
     private  String okTitle="",  cancelTitle=null,  exTitle=null;
 
     /**
      *
-     * @param icon
+     * @param iconRes
      * @return
      */
-    public MvpMessageBoxBuilder setIcon(Bitmap icon)
+    public MvpMessageBoxBuilder setIcon(int iconRes)
     {
-        this.icon = icon;
+        this.iconRes = iconRes;
         return this;
     }
 
@@ -120,7 +119,7 @@ public class MvpMessageBoxBuilder {
     public MvpMessageBoxPresenter build(FragmentManager fragmentManager) {
         return
         MvpMessageBoxPresenter.createDialog(fragmentManager,
-                 icon,  title,  msg,
+                 iconRes,  title,  msg,
                  askDontShowAgain,
                  okTitle,  cancelTitle,  exTitle);
     }

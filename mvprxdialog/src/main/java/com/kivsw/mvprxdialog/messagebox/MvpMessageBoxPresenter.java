@@ -81,13 +81,13 @@ public class MvpMessageBoxPresenter extends BaseMvpPresenter
 
 //-----------------------------
     public static MvpMessageBoxPresenter createDialog(FragmentManager fragmentManager,
-                                                      Bitmap icon,
+                                                      int iconResId,
                                                       String title, String msg, boolean askDontShowAgain,
                                                       String okTitle, String cancelTitle, String exTitle)
     {
         MvpMessageBoxPresenter presenter = new MvpMessageBoxPresenter();
         long id = presenter.getDialogPresenterId();
-        MvpMessageBox fragment = MvpMessageBox.newInstance(id, icon, title, msg, askDontShowAgain, okTitle, cancelTitle, exTitle);
+        MvpMessageBox fragment = MvpMessageBox.newInstance(id, iconResId, title, msg, askDontShowAgain, okTitle, cancelTitle, exTitle);
 
         fragment.show(fragmentManager, String.valueOf(id));
 

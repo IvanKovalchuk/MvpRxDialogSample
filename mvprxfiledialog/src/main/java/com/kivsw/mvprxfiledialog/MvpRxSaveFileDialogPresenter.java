@@ -1,8 +1,6 @@
 package com.kivsw.mvprxfiledialog;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentManager;
 
 import com.kivsw.cloud.DiskContainer;
@@ -28,12 +26,12 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
                                                             @NonNull DiskContainer disks, @Nullable String defaultPath, @Nullable String mask, @Nullable String defaultExt)
     {
 
-        Bitmap ico = BitmapFactory.decodeResource(context.getResources(), R.drawable.ico_save);
+        //Bitmap ico = BitmapFactory.decodeResource(context.getResources(), );
         String title = context.getResources().getText(R.string.save_file).toString();
         MvpRxSaveFileDialogPresenter presenter = new MvpRxSaveFileDialogPresenter(context, disks,defaultPath, mask, defaultExt);
         long id= presenter.getDialogPresenterId();
 
-        MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, ico, title);
+        MvpRxFileDialog fragment = MvpRxFileDialog.newInstance(id, R.drawable.ico_save, title);
 
         fragment.show(fragmentManager, String.valueOf(id));
 

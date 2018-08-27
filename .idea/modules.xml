@@ -3,11 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MvpRxDialogSample.iml" filepath="$PROJECT_DIR$/MvpRxDialogSample.iml" />
-      <module fileurl="file://D:\data\work\android\MvpRxDialog_sample\MvpRxDialogSample.iml" filepath="D:\data\work\android\MvpRxDialog_sample\MvpRxDialogSample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/MvpRxDialog_sample.iml" filepath="$PROJECT_DIR$/MvpRxDialog_sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cloud_disk/cloud_disk.iml" filepath="$PROJECT_DIR$/cloud_disk/cloud_disk.iml" />
-      <module fileurl="file://D:\data\work\android\MvpRxDialog_sample\cloudcache\cloudcache.iml" filepath="D:\data\work\android\MvpRxDialog_sample\cloudcache\cloudcache.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvprxdialog/mvprxdialog.iml" filepath="$PROJECT_DIR$/mvprxdialog/mvprxdialog.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvprxfiledialog/mvprxfiledialog.iml" filepath="$PROJECT_DIR$/mvprxfiledialog/mvprxfiledialog.iml" />
     </modules>

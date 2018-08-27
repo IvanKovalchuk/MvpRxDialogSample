@@ -3,6 +3,7 @@ package com.kivsw.mvprxdialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Html;
@@ -134,7 +135,9 @@ implements Contract.IView
     protected void setupTitle(View rootView)
     {
         headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
-        Bitmap icon = getArguments().getParcelable(ICON_PARAM);
+        int iconResId = getArguments().getInt(ICON_PARAM);
+        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), iconResId);
+
         headerIcon.setImageBitmap(icon);
         if(icon==null) headerIcon.setVisibility(View.GONE);
 

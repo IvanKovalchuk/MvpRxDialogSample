@@ -186,13 +186,13 @@ class FileAdapter  extends BaseListAdapter
         if(sz<1024)
             s=(String.format("%4db ",sz));
         else if(sz<1024*1024)
-            s=(String.format("%4dk ",sz/1024));
+            s=(String.format("%4dk ",sz/1024l));
         else if(sz<1024*1024*1024)
-            s=(String.format("%4dM ",sz/(1024*1024)));
+            s=(String.format("%4dM ",sz/(1024l*1024)));
         else if(sz<1024*1024*1024*1024)
-            s=(String.format("%4dG ",sz/(1024*1024*1024)));
+            s=(String.format("%4dG ",sz/(1024l*1024*1024)));
         else
-            s=(String.format("%4dT ",sz/(1024*1024*1024*1024)));
+            s=(String.format("%4dT ",sz/(1024l*1024l*1024*1024)));
 
         return s;
     }

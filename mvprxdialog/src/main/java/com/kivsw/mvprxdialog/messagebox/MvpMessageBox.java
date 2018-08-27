@@ -1,7 +1,6 @@
 package com.kivsw.mvprxdialog.messagebox;
 
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -56,13 +55,13 @@ public class MvpMessageBox extends BaseMvpFragment {
      *  @param askDontShowAgain enables "Don't show again" checkBox
      */
     // TODO: Rename and change types and number of parameters
-    public static MvpMessageBox newInstance(long presenterId, Bitmap icon, String title, String msg, boolean askDontShowAgain, String okTitle, String cancelTitle, String exTitle)
+    public static MvpMessageBox newInstance(long presenterId, int iconResId, String title, String msg, boolean askDontShowAgain, String okTitle, String cancelTitle, String exTitle)
     {
         MvpMessageBox fragment = new MvpMessageBox();
         Bundle args = new Bundle();
 
         args.putLong(PRESENTER_ID, presenterId);
-        args.putParcelable(ICON_PARAM,icon);
+        args.putInt(ICON_PARAM,iconResId);
         args.putString(MESSAGE_PARAM,msg);
         args.putString(TITLE_PARAM,title);
         args.putBoolean(DONT_SHOW_AGAIN,askDontShowAgain);
