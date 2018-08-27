@@ -57,7 +57,7 @@ public abstract class BaseIOAuthCore
     @Override
     public void cancel()
     {
-        observable.onError(new Exception(""));
+        observable.onError(new OAuthCancelledException());
     }
 
     @Override
