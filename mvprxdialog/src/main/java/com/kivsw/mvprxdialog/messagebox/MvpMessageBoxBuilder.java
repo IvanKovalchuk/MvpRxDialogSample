@@ -1,6 +1,7 @@
 package com.kivsw.mvprxdialog.messagebox;
 
 import android.support.v4.app.FragmentManager;
+import android.view.View;
 
 /**
  * Builder for MvpMessageBoxPresenter class
@@ -12,7 +13,7 @@ public class MvpMessageBoxBuilder {
         return new MvpMessageBoxBuilder();
     };
 
-    private int iconRes=0;
+    private int iconRes= View.NO_ID;
     private String title=null,  msg=null;
     private  boolean askDontShowAgain=false;
     private  String okTitle="",  cancelTitle=null,  exTitle=null;

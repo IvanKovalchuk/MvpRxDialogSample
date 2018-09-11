@@ -135,11 +135,14 @@ implements Contract.IView
     protected void setupTitle(View rootView)
     {
         headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
+        Bitmap icon=null;
         int iconResId = getArguments().getInt(ICON_PARAM);
-        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), iconResId);
-
-        headerIcon.setImageBitmap(icon);
-        if(icon==null) headerIcon.setVisibility(View.GONE);
+        if(iconResId>0) {
+            icon = BitmapFactory.decodeResource(getContext().getResources(), iconResId);
+            headerIcon.setImageBitmap(icon);
+        }
+        if(icon==null)
+            headerIcon.setVisibility(View.GONE);
 
         headerTextView =  (TextView)rootView.findViewById(R.id.headerText);
         headerTextView.setText(Html.fromHtml(getArguments().getString(TITLE_PARAM)));
