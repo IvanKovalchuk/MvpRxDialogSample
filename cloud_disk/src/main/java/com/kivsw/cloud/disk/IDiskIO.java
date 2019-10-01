@@ -18,7 +18,14 @@ public interface IDiskIO {
     Completable authorizeIfNecessary();
     Completable isAuthorized();
     Single<DiskInfo> getRequestDiskInfo();
-    Single<ResourceInfo> getResourceInfo(String path);
+    /**
+     * retrieves file/dir info.
+     * observable emits 1 item for a file and may emit several items for a directory. Each item
+     * holds a piece of directory content
+     * @param path
+     * @return observable thatr emits file or directory info
+     */
+    Observable<ResourceInfo> getResourceInfo(String path);
     Completable createDir(String path);
     Completable renameDir(String path, String newPath);
     Completable renameFile(String path, String newPath);

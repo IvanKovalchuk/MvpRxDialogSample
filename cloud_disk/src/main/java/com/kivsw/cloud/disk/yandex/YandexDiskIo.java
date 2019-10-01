@@ -5,18 +5,23 @@ import android.content.Context;
 import com.kivsw.cloud.OAuth.BaseIOAuthCore;
 import com.kivsw.cloud.OAuth.YandexOAuthCore;
 import com.kivsw.cloud.disk.BaseDiskIO;
+import com.kivsw.cloud.disk.IDiskIO;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 import okhttp3.RequestBody;
 
 
@@ -42,17 +47,34 @@ public class YandexDiskIo extends BaseDiskIO {
     private API.RequestUpload requestUpload;
     private final String clientId, deviceName, deviceId;
 
+    public enum FileListOrder{NAME, NAME_DESC, SIZE, SIZE_DESC, MODTIME, MODTIME_DESC}
 
-    public YandexDiskIo(Context cnt, String clientId, String deviceId, String deviceName) {
+    public YandexDiskIo(Context cnt, String clientId, String deviceId, String deviceName, FileListOrder fileListOrder) {
         super(cnt);
 
         this.clientId = clientId;
         this.deviceName = deviceName;
         this.deviceId = deviceId;
+        this.fileListOrder = fileListOrderToString(fileListOrder);
 
 
         initRetrofit();
     }
+
+    String fileListOrderToString(FileListOrder fileListOrder)
+    {
+        switch(fileListOrder)
+        {
+            case NAME : return API.RequestResourceInfo.SORT_NAME;
+            case NAME_DESC : return API.RequestResourceInfo.SORT_NAME_DESCEND;
+            case SIZE : return API.RequestResourceInfo.SORT_SIZE;
+            case SIZE_DESC : return API.RequestResourceInfo.SORT_SIZE_DESCEND;
+            case MODTIME : return API.RequestResourceInfo.SORT_MODIFIED;
+            case MODTIME_DESC : return API.RequestResourceInfo.SORT_MODIFIED_DESCEND;
+        }
+        return API.RequestResourceInfo.SORT_NAME;
+    }
+
     void initRetrofit()
     {
 
@@ -104,11 +126,45 @@ public class YandexDiskIo extends BaseDiskIO {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    /**
+     * retrieves file/dir info.
+     * observable emits 1 item for a file and may emit several items for a directory. Each item
+     * holds a piece of directory content
+     * @param path
+     * @return observable thatr emits file or directory info
+     */
+    public String fileListOrder = API.RequestResourceInfo.SORT_NAME;
     @Override
-    public Single<ResourceInfo> getResourceInfo(String path) {
+    public Observable<ResourceInfo> getResourceInfo(final String path) { // TODO make several requests for file lis
 
-        return
-        resourceInfo.request(tokenParam(), path, 0, 1024*64)
+        final Subject<Long> subject = BehaviorSubject.createDefault(0L);
+        final String token = tokenParam();
+
+        return subject
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Function<Long, ObservableSource<IDiskIO.ResourceInfo> >(){
+
+                            @Override
+                            public ObservableSource<IDiskIO.ResourceInfo> apply(final Long offset) throws Exception {
+                                return resourceInfo.request(token, path, offset, 128, fileListOrder)
+                                        .map(new Function<API.ResourceItem , ResourceInfo>(){
+                                            @Override
+                                            public ResourceInfo apply(API.ResourceItem resourceItem) {// TODO transforming data format
+                                                List<ResourceInfo> content = resourceItem.content();
+
+                                                if(content!=null && content.size()>0) subject.onNext(offset+content.size());
+                                                else subject.onComplete();
+                                                return resourceItem;
+                                            }
+                                        })
+                                        .toObservable();
+                            }
+                        }
+                )
+                .observeOn(AndroidSchedulers.mainThread());
+
+
+       /* resourceInfo.request(tokenParam(), path, 0, 128)//1024*64)
                 .subscribeOn(Schedulers.io())
                 .map(new Function<API.ResourceItem , ResourceInfo>(){
                     @Override
@@ -117,7 +173,8 @@ public class YandexDiskIo extends BaseDiskIO {
                         return info;
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                .toObservable();*/
 
     }
 

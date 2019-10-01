@@ -26,9 +26,9 @@ import io.reactivex.CompletableSource;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.SingleSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
@@ -322,7 +322,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
     };
 
     private Disposable updateDirDisposable=null;
-    protected void updateDir(boolean cleanContext, final String itemToPos)
+    protected void updateDir(boolean cleanContext, final String itemToPos) //TODO test for errors
     {
         diskListVisible=false;
 
@@ -339,19 +339,20 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
 /*        final IDiskIO disk=currentDisk.getDiskIo();
         disk.authorizeIfNecessary()*/
+
+        final ArrayList<IDiskIO.ResourceInfo> list = new ArrayList<IDiskIO.ResourceInfo>();
         disks.authorizeIfNecessary(fileSystemPath.getFullPath())
                 .andThen(Single.just("") )
-                .flatMap(new Function<String, SingleSource<IDiskIO.ResourceInfo>>() {
+                .flatMapObservable(new Function<String, ObservableSource<IDiskIO.ResourceInfo>>() {
                     @Override
-                    public SingleSource<IDiskIO.ResourceInfo> apply(@NonNull String s) throws Exception {
-                        return disks.getResourceInfo(fileSystemPath.getFullPath());
+                    public ObservableSource<IDiskIO.ResourceInfo> apply(@NonNull String s) throws Exception {
+                        return disks.getResourceInfo(fileSystemPath.getFullPath());//
                     }
                 })
                 .map(new Function<IDiskIO.ResourceInfo, List<IDiskIO.ResourceInfo>>() {
                     @Override
                     public List<IDiskIO.ResourceInfo> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
-                        ArrayList<IDiskIO.ResourceInfo> list = new ArrayList<IDiskIO.ResourceInfo>();
-                        //list.add(createUpdir());
+
                         if(resourceInfo.content()!=null)
                             list.addAll(
                                     filter.filterList(resourceInfo.content())
@@ -360,6 +361,8 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                             list.add(createUpdir());
                             throw new Exception(context.getText(R.string.cant_read_dir).toString());
                         }
+                        if(list.size()>0 && list.get(0).name().equals("..") )
+                            list.remove(0);
 
                         Collections.sort(list, new Comparator<IDiskIO.ResourceInfo>()
                         {
@@ -382,20 +385,25 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
                         return list;
                     }
                 })
-                .subscribe(new SingleObserver<List<IDiskIO.ResourceInfo>>() {
+                .subscribe(new Observer<List<IDiskIO.ResourceInfo>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         updateDirDisposable = d;
                     }
 
                     @Override
-                    public void onSuccess(@NonNull List<IDiskIO.ResourceInfo> fileList) {
+                    public void onNext(@NonNull List<IDiskIO.ResourceInfo> fileList) {
                         MvpRxFileDialogPresenter.this.fileList= fileList;
                         visibleFileList=fileList;
-                        progressVisible=false;
 
                         setViewData(itemToPos);
 
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        progressVisible=false;
+                        setViewData(itemToPos);
                     }
 
                     @Override
@@ -409,6 +417,7 @@ public abstract class MvpRxFileDialogPresenter extends BaseMvpPresenter {
 
                         updateDirDisposable=null;
                     }
+
                 });
     };
 

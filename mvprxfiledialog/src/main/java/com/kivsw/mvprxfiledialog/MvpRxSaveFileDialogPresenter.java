@@ -77,6 +77,7 @@ public class MvpRxSaveFileDialogPresenter extends MvpRxFileDialogPresenter {
         view.showProgress(true);
 
         getDisks().getResourceInfo(filePath) // read dir content
+                .firstOrError()
                 .flatMap(new Function<IDiskIO.ResourceInfo, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {

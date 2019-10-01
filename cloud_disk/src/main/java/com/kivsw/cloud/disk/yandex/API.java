@@ -197,7 +197,13 @@ public class API {
 
     public interface RequestResourceInfo{
         @GET("/v1/disk/resources")
-        Single<ResourceItem> request(@Header("Authorization") String OAuthToken, @Query("path") String path, @Query("offset") long offset, @Query("limit") long limit);
+        Single<ResourceItem> request(@Header("Authorization") String OAuthToken, @Query("path") String path, @Query("offset") long offset, @Query("limit") long limit, @Query("sort") String sort);
+        static String SORT_NAME="name",
+                SORT_NAME_DESCEND="-name",
+                SORT_SIZE="size",
+                SORT_SIZE_DESCEND="-size",
+                SORT_MODIFIED="modified",
+                SORT_MODIFIED_DESCEND="-modified";
     }
     public static RequestResourceInfo createRequestResourceInfo()
     {return getRetrofitInstance().create(API.RequestResourceInfo.class);};

@@ -241,9 +241,9 @@ public class LocalDiskIo implements IDiskIO {
     };
 
     @Override
-    public Single<ResourceInfo> getResourceInfo(final String path) {
+    public Observable<ResourceInfo> getResourceInfo(final String path) {
 
-        return Single.fromCallable(new Callable<ResourceInfo>() {
+        return Observable.fromCallable(new Callable<ResourceInfo>() {
                     @Override
                     public ResourceInfo call() throws Exception {
                         return new LocalResourceInfo(path);

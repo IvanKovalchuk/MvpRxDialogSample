@@ -114,6 +114,7 @@ public class CloudCache {
 
                         return   disk.getResourceInfo(remoteFilePath) // gets file info
                                 .observeOn(Schedulers.io())
+                                .firstOrError()
                                 .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<?>>(){ // returns true if we need download file again
                                     @Override
                                     public Observable apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
@@ -165,6 +166,7 @@ public class CloudCache {
         return
                 params.disk.getResourceInfo(params.cloudFile.getPath())
                 .observeOn(Schedulers.io())
+                .firstOrError()
                 .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<?>>() { // retrieve file itself
                     @Override
                     public ObservableSource<?> apply(@NonNull final IDiskIO.ResourceInfo resourceInfo) throws Exception {

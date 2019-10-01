@@ -77,7 +77,7 @@ public class DiskContainer {
     }
 
 
-    public Single<IDiskIO.ResourceInfo> getResourceInfo(String urlPath) {
+    public Observable<IDiskIO.ResourceInfo> getResourceInfo(String urlPath) {
         CloudFile cloudFile=parseFileName(urlPath);
         if(cloudFile==null)
             Single.error(new Exception("incorrect path "+urlPath));

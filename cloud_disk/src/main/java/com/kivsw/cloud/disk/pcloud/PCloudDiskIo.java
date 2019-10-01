@@ -120,14 +120,14 @@ public class PCloudDiskIo extends BaseDiskIO {
     }
 
     @Override
-    public Single<ResourceInfo> getResourceInfo(String path) {
+    public Observable<ResourceInfo> getResourceInfo(String path) {
         Single<API.MetadataContainer> folder, file;
 
         folder =  getFolderInfo(path);//requestListRevisions(tokenKeeper.getToken(), path)
         file = getRenameFile(path, path);
 
         Single res=
-        Single.zip(folder, file, new BiFunction<API.MetadataContainer, API.MetadataContainer, ResourceInfo>(){
+                Single.zip(folder, file, new BiFunction<API.MetadataContainer, API.MetadataContainer, ResourceInfo>(){
 
             @Override
             public ResourceInfo apply(@NonNull API.MetadataContainer folderMeta, @NonNull API.MetadataContainer fileMeta) throws Exception {
@@ -144,7 +144,7 @@ public class PCloudDiskIo extends BaseDiskIO {
       // .subscribeOn(Schedulers.io())
        .observeOn(AndroidSchedulers.mainThread());
 
-        return res;
+        return res.toObservable();
     }
 
     @Override
