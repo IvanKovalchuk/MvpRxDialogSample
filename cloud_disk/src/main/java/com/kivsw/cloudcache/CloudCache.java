@@ -16,6 +16,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -59,21 +60,6 @@ public class CloudCache {
 
     }
 
- /*   public Completable markAsLocalyModified(final String filePath)
-    {
-        CacheFileInfo lastFileInfo=cacheData.map.get(filePath);
-        if(lastFileInfo==null) return Completable.error(new Exception("No such file "+filePath));
-
-        lastFileInfo.localyModified = true;
-
-        return Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                doSaveMapData(); // TODO check if it works in an IO-thread
-            }
-        })
-        .observeOn(Schedulers.io());
-    };*/
 
     /**
      * retrieves a file from cache or download the file
@@ -81,7 +67,7 @@ public class CloudCache {
      * @param fullFilePath
      * @return Observable that emits CacheFileInfo and Integer
      */
-    public Observable getFileFromCache(final String fullFilePath)
+    public Observable<CacheFileInfo> getFileFromCacheOrDownload(final String fullFilePath)
     {
         // check path correctness
         DiskContainer.CloudFile cf= disks.parseFileName(fullFilePath);
@@ -91,9 +77,9 @@ public class CloudCache {
         // check if the file needs to be cached
         final IDiskIO disk=cf.diskRepresenter.getDiskIo();
         final String remoteFilePath=cf.getPath(); // file path without it's scheme
-        String localFN=disk.convertToLocalPath(remoteFilePath);
+        @Nullable String localFN=disk.convertToLocalPath(remoteFilePath);
         if(localFN!=null)
-            return Observable.just(new CacheFileInfo(localFN, fullFilePath));
+            return Observable.just(new CacheFileInfo(fullFilePath, localFN, 100));
 
         return
                 Observable.fromCallable(new Callable<CacheFileInfo>() {
@@ -101,21 +87,21 @@ public class CloudCache {
                     public CacheFileInfo call() throws Exception {// gets file from cache
                         CacheFileInfo res=cacheData.get(fullFilePath);
                         if(res==null)
-                            res= new CacheFileInfo(); // cache does not have this file
+                            res= new CacheFileInfo(fullFilePath); // cache does not have this file
                         return res;
                     }
                 })
                 .subscribeOn(Schedulers.io())
-                .flatMap(new Function<CacheFileInfo, ObservableSource<?>>() {
+                .flatMap(new Function<CacheFileInfo, ObservableSource<CacheFileInfo>>() {
                     @Override
-                    public ObservableSource<?> apply(@NonNull final CacheFileInfo lastCacheFileInfo) throws Exception {
+                    public ObservableSource<CacheFileInfo> apply(@NonNull final CacheFileInfo lastCacheFileInfo) throws Exception {
 
                         if(lastCacheFileInfo.localName==null) return doDownloadFile(fullFilePath); // just download
 
                         return   disk.getResourceInfo(remoteFilePath) // gets file info
                                 .observeOn(Schedulers.io())
                                 .firstOrError()
-                                .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<?>>(){ // returns true if we need download file again
+                                .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<CacheFileInfo>>(){ // returns true if we need download file again
                                     @Override
                                     public Observable apply(@NonNull IDiskIO.ResourceInfo resourceInfo) throws Exception {
                                         if(resourceInfo.modified()==lastCacheFileInfo.modifiedTime) { // if server has the same file's time
@@ -124,7 +110,7 @@ public class CloudCache {
                                         return doDownloadFile(fullFilePath); //
                                     }
                                 })
-                                .onErrorResumeNext(new Function<Throwable, ObservableSource<?>>() {
+                                .onErrorResumeNext(new Function<Throwable, ObservableSource<CacheFileInfo>>() {
                                     @Override
                                     public Observable apply(@NonNull Throwable throwable) throws Exception {
                                         if(lastCacheFileInfo.localName==null)
@@ -145,7 +131,7 @@ public class CloudCache {
      * @param remoteFilePath
      * @return Observable that emits CacheFileInfo and Integer
      */
-    protected Observable doDownloadFile(String remoteFilePath)
+    protected Observable<CacheFileInfo> doDownloadFile(final String remoteFilePath)
     {
         class DownloadParams
         {
@@ -161,20 +147,20 @@ public class CloudCache {
               return Observable.error(new Exception("incorrect path "+params.remoteFilePath));
 
         params.disk=params.cloudFile.diskRepresenter.getDiskIo();
-        params.cacheFileName = cacheData.generateNewCacheFileName();//cacheDir+"/"+String.valueOf(cacheData.getNewId());
+        params.cacheFileName = cacheData.generateNewCacheFileName();
 
         return
                 params.disk.getResourceInfo(params.cloudFile.getPath())
                 .observeOn(Schedulers.io())
                 .firstOrError()
-                .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<?>>() { // retrieve file itself
+                .flatMapObservable(new Function<IDiskIO.ResourceInfo, ObservableSource<CacheFileInfo>>() { // retrieve file itself
                     @Override
-                    public ObservableSource<?> apply(@NonNull final IDiskIO.ResourceInfo resourceInfo) throws Exception {
+                    public ObservableSource<CacheFileInfo> apply(@NonNull final IDiskIO.ResourceInfo resourceInfo) throws Exception {
 
-                        Observable onFinishObservable=Observable.fromCallable(new Callable() {
+                        Observable<CacheFileInfo> onFinishObservable=Observable.fromCallable(new Callable<CacheFileInfo>() {
                                     @Override
-                                    public Object call() throws Exception { // updates cache data and return CacheFileInfo
-                                        CacheFileInfo cfi=new CacheFileInfo(params.cacheFileName, params.remoteFilePath);
+                                    public CacheFileInfo call() throws Exception { // updates cache data and return CacheFileInfo
+                                        CacheFileInfo cfi=new CacheFileInfo(params.remoteFilePath, params.cacheFileName,  100);
                                         cfi.modifiedTime = resourceInfo.modified();
                                         cacheData.put(params.remoteFilePath, cfi);
                                         return cfi;
@@ -185,8 +171,13 @@ public class CloudCache {
 
                         return
                             params.disk
-                             .downloadFile(params.cloudFile.getPath(), params.cacheFileName)
-                             .concatWith(onFinishObservable);
+                                    .downloadFile(params.cloudFile.getPath(), params.cacheFileName)
+                                    .map(new Function<Integer,CacheFileInfo>(){
+                                            public CacheFileInfo apply(@NonNull Integer percent){
+                                                return new CacheFileInfo(remoteFilePath, null, percent);
+                                            }
+                                        })
+                                   .concatWith(onFinishObservable);
                     }
                 });
 

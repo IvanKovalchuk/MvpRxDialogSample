@@ -6,6 +6,7 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.annotations.Nullable;
 
 /**
  * Created by ivan on 6/23/17.
@@ -38,6 +39,7 @@ public interface IDiskIO {
     String getErrorString(Throwable throwable); // convert an exception into readable form
 
     boolean isLocalStorage();
+    @Nullable
     String convertToLocalPath(String path); // returns path in local file system or null
 
 

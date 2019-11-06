@@ -14,6 +14,8 @@ import android.widget.TextView;
 import com.kivsw.mvprxdialog.BaseMvpFragment;
 import com.kivsw.mvprxdialog.R;
 
+import io.reactivex.annotations.Nullable;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,7 +57,7 @@ public class MvpMessageBox extends BaseMvpFragment {
      *  @param askDontShowAgain enables "Don't show again" checkBox
      */
     // TODO: Rename and change types and number of parameters
-    public static MvpMessageBox newInstance(long presenterId, int iconResId, String title, String msg, boolean askDontShowAgain, String okTitle, String cancelTitle, String exTitle)
+    public static MvpMessageBox newInstance(long presenterId, int iconResId, String title, String msg, boolean askDontShowAgain, @Nullable String okTitle, @Nullable String cancelTitle, @Nullable String exTitle)
     {
         MvpMessageBox fragment = new MvpMessageBox();
         Bundle args = new Bundle();
@@ -100,9 +102,9 @@ public class MvpMessageBox extends BaseMvpFragment {
         setupTitle(rootView);
 
 
-        String okTitle=getArguments().getString(OK_TITLE_PARAM);
-        String cancelTitle=getArguments().getString(CANCEL_BTN_PARAM);
-        String extraTitle=getArguments().getString(EXTRA_BTN_PARAM);
+        @Nullable String okTitle=getArguments().getString(OK_TITLE_PARAM);
+        @Nullable String cancelTitle=getArguments().getString(CANCEL_BTN_PARAM);
+        @Nullable String extraTitle=getArguments().getString(EXTRA_BTN_PARAM);
 
         if(okTitle!=null)
         {

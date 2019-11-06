@@ -11,6 +11,7 @@ import com.kivsw.cloud.disk.IDiskRepresenter;
 import com.kivsw.cloud.disk.StorageUtils;
 import com.kivsw.cloud.disk.localdisk.LocalDiskRepresenter;
 import com.kivsw.cloud.disk.pcloud.PcloudRepresenter;
+import com.kivsw.cloud.disk.yandex.YandexDiskIo;
 import com.kivsw.cloud.disk.yandex.YandexRepresenter;
 import com.kivsw.cloudcache.CloudCache;
 import com.kivsw.cloudcache.data.CacheFileInfo;
@@ -73,7 +74,6 @@ public class MainActivityPresenter implements Contract.IPresenter {
 
     public void showDialog()
     {
-        //Bitmap icon = BitmapFactory.decodeResource(view.getResources(), R.mipmap.ic_launcher_round);
         MvpMessageBoxBuilder.newInstance()
                 .setIcon(R.mipmap.ic_launcher_round)
                 .setText("A Title", "A message")
@@ -83,15 +83,14 @@ public class MainActivityPresenter implements Contract.IPresenter {
                 .getSingle()
                 .flatMap(new Function<Integer, Single<Integer>>(){
                     @Override
-                    public Single<Integer> apply(@NonNull Integer integer) throws Exception {
+                    public Single<Integer> apply(@NonNull Integer btnNumber) throws Exception {
                         return
                         MvpMessageBoxBuilder.newInstance()
-                                .setText("Another Title", "Another message")
+                                .setText("Another Title", String.format("you pressed button %d", btnNumber))
                                 .build(view.getSupportFragmentManager())
                                 .getSingle();
                     }
                 })
-        // MvpMessageBoxPresenter.createDialog(view.getSupportFragmentManager(),  icon, "A Title", "A message",true, "button1", "btn2", "btn3")                 .getSingle()
                  .subscribe(new SingleObserver<Integer>() {
                      @Override
                      public void onSubscribe(@NonNull Disposable d) {
@@ -111,25 +110,14 @@ public class MainActivityPresenter implements Contract.IPresenter {
     }
 
     public MainActivityPresenter() {
-        //this.view = view;
+
 
     }
 
     public void showInputBox()
     {
         Bitmap icon = BitmapFactory.decodeResource(view.getResources(), R.mipmap.ic_launcher_round);
-        /*MvpInputBoxPresenter.createDialog(view.getSupportFragmentManager(),
-                icon, "A Title", "A message", "initial value", InputType.TYPE_CLASS_TEXT,
-                 new MvpInputBoxPresenter.TestValue(){
-                     @Override
-                     public boolean test(MvpInputBoxPresenter presenter, Editable value, StringBuilder errorMessage) {
-                         if(value.length()==0) {
-                             errorMessage.append("Empty value is not correct");
-                             return false;
-                         }
-                         return true;
-                     }
-                 })*/
+
                 MvpInputBoxBuilder.newInstance()
                         .setIcon(icon)
                         .setText("A Title", "A message")
@@ -196,15 +184,15 @@ public class MainActivityPresenter implements Contract.IPresenter {
         hasBeenDownloaded=false;
         MvpRxOpenFileDialogPresenter.createDialog(view, view.getSupportFragmentManager(), getDisks(), lastOpenDir, null)
                 .getMaybe()
-                .flatMapObservable(new Function<String, ObservableSource<?>>() {
+                .flatMapObservable(new Function<String, ObservableSource<CacheFileInfo>>() {
                     @Override
-                    public ObservableSource<?> apply(@NonNull String filePath) throws Exception {
+                    public ObservableSource<CacheFileInfo> apply(@NonNull String filePath) throws Exception {
                         lastOpenDir = ExtractFilePath(filePath);
                         view.showMessage(filePath);
-                        return fileCache.getFileFromCache(filePath);
+                        return fileCache.getFileFromCacheOrDownload(filePath);
                     }
                 })
-                .subscribe(new Observer(){
+                .subscribe(new Observer<CacheFileInfo>(){
 
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
@@ -212,19 +200,21 @@ public class MainActivityPresenter implements Contract.IPresenter {
                     }
 
                     @Override
-                    public void onNext(@NonNull Object o) {
+                    public void onNext(@NonNull CacheFileInfo cacheFileInfo) {
                         if(view==null)
                             return;
-                        if(o instanceof Number) {
-                            view.showMessage(String.format("downloading %d %%", ((Number) o).intValue()));
-                            hasBeenDownloaded=true;
-                        }
-                        if(o instanceof CacheFileInfo)
+
+                        if(cacheFileInfo.localName!=null)
                         {
                             String info;
-                            if(hasBeenDownloaded) info= "downloaded\n"+((CacheFileInfo)o).localName;
-                                    else  info= "cached\n"+((CacheFileInfo)o).localName;
+                            if(hasBeenDownloaded) info= "downloaded\n"+cacheFileInfo.localName;
+                                    else  info= "cached\n"+cacheFileInfo.localName;
                             view.showMessage(info);
+                        }
+                        else
+                        {
+                            view.showMessage(String.format("downloading %d %%", cacheFileInfo.progress));
+                            hasBeenDownloaded=true;
                         }
                     }
 
@@ -332,7 +322,8 @@ public class MainActivityPresenter implements Contract.IPresenter {
             disks.add(LocalDiskRepresenter.createPrivateStorageFS(view));
 
             disks.add(new PcloudRepresenter(view.getApplicationContext(), "LPGinE9RXlS"));
-            disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4", null, null));
+            disks.add(new YandexRepresenter(view.getApplicationContext(), "e0b45e7f385644e9af23b7a3b3862ac4",
+                      null, null, YandexDiskIo.FileListOrder.NAME));
         }
 
         return new DiskContainer(disks);
