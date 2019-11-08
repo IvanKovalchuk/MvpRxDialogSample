@@ -20,3 +20,21 @@ This project demonstrates working with <b>mvprxdialog, mvprxfiledialog, cloud_di
      <br><b>mvprxfiledialog</b> is an Android library based on <b>mvprxdialog</b> and <b>cloud_disk</b>. 
    This library provides file/dir choosing dialog including OAuth-authorization.
    
+   In order to use these libraries (or one of them) in your project you need add the following code into `build.gradle` file
+```   
+allprojects {
+  repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+  }
+}
+```
+   
+```
+dependencies {
+  implementation 'com.github.kivSW.MvpRxLibraries:cloud_disk:1.0.1'
+  implementation 'com.github.kivSW.MvpRxLibraries:mvprxdialog:1.0.1'
+  implementation 'com.github.kivSW.MvpRxLibraries:mvprxfiledialog:1.0.1'
+}
+ ```
+
