@@ -32,9 +32,9 @@ allprojects {
    
 ```
 dependencies {
-  implementation 'com.github.kivSW.MvpRxLibraries:cloud_disk:1.0.2'
-  implementation 'com.github.kivSW.MvpRxLibraries:mvprxdialog:1.0.2'
-  implementation 'com.github.kivSW.MvpRxLibraries:mvprxfiledialog:1.0.2'
+  implementation 'com.github.kivSW.MvpRxLibraries:cloud_disk:1.0.3'
+  implementation 'com.github.kivSW.MvpRxLibraries:mvprxdialog:1.0.3'
+  implementation 'com.github.kivSW.MvpRxLibraries:mvprxfiledialog:1.0.3'
 }
  ```
 
