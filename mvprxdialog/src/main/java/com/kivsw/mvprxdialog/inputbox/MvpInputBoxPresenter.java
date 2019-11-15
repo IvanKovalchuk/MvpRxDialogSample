@@ -1,6 +1,5 @@
 package com.kivsw.mvprxdialog.inputbox;
 
-import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 
@@ -90,7 +89,7 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
 
     //----------------------------------------
     public static MvpInputBoxPresenter createDialog(FragmentManager fragmentManager,
-                                                      Bitmap icon,
+                                                        int iconResId,
                                                       String title, String msg, String InputValue,
                                                       int inputType,
                                                       TestValue testValue)
@@ -99,7 +98,7 @@ public class MvpInputBoxPresenter extends BaseMvpPresenter {
         presenter.testValue = testValue;
         long id=presenter.getDialogPresenterId();
 
-        MvpInputBox fragment = MvpInputBox.newInstance(id, icon, title, msg, InputValue, inputType);
+        MvpInputBox fragment = MvpInputBox.newInstance(id, iconResId, title, msg, InputValue, inputType);
 
         fragment.show(fragmentManager, String.valueOf(id));
         return presenter;

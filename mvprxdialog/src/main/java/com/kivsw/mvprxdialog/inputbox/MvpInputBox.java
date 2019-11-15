@@ -1,7 +1,6 @@
 package com.kivsw.mvprxdialog.inputbox;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,13 +30,13 @@ public class MvpInputBox extends BaseMvpFragment {
             OLD_VALUE_PARAM = "OLD_VALUE_PARAM";
 
 
-    public static MvpInputBox newInstance(long presenterId, Bitmap icon, String title, String msg, String InputValue, int inputType)
+    public static MvpInputBox newInstance(long presenterId, int iconResId, String title, String msg, String InputValue, int inputType)
     {
         MvpInputBox fragment = new MvpInputBox();
         Bundle args = new Bundle();
 
         args.putLong(PRESENTER_ID, presenterId);
-        args.putParcelable(ICON_PARAM,icon);
+        args.putInt(ICON_ID,iconResId);
         args.putString(MESSAGE_PARAM,msg);
         args.putString(TITLE_PARAM,title);
         args.putString(OLD_VALUE_PARAM, InputValue);

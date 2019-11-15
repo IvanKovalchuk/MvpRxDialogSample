@@ -131,12 +131,12 @@ implements Contract.IView
     }
 
     protected final static String  TITLE_PARAM="TITLE_PARAM",
-            ICON_PARAM="ICON_PARAM";
+            ICON_ID ="ICON_ID";
     protected void setupTitle(View rootView)
     {
         headerIcon = (ImageView) rootView.findViewById(R.id.headerIcon);
         Bitmap icon=null;
-        int iconResId = getArguments().getInt(ICON_PARAM);
+        int iconResId = getArguments().getInt(ICON_ID);
         if(iconResId>0) {
             icon = BitmapFactory.decodeResource(getContext().getResources(), iconResId);
             headerIcon.setImageBitmap(icon);

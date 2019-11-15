@@ -53,7 +53,7 @@ public class MvpRxFileDialog extends BaseMvpFragment
         MvpRxFileDialog fragment = new MvpRxFileDialog();
         Bundle args = new Bundle();
         args.putLong(PRESENTER_ID, id);
-        args.putInt(ICON_PARAM,iconId);
+        args.putInt(ICON_ID,iconId);
         args.putString(TITLE_PARAM,title);
 
         fragment.setArguments(args);

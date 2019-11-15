@@ -119,7 +119,7 @@ public class MainActivityPresenter implements Contract.IPresenter {
         Bitmap icon = BitmapFactory.decodeResource(view.getResources(), R.mipmap.ic_launcher_round);
 
                 MvpInputBoxBuilder.newInstance()
-                        .setIcon(icon)
+                        .setIcon(R.mipmap.ic_launcher_round)
                         .setText("A Title", "A message")
                         .setInputType(InputType.TYPE_CLASS_NUMBER)
 

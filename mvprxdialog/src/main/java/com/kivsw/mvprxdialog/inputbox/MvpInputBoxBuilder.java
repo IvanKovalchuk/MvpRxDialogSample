@@ -1,8 +1,8 @@
 package com.kivsw.mvprxdialog.inputbox;
 
-import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 import android.text.InputType;
+import android.view.View;
 
 /**
  * Builder for MvpInputBoxPresenter class
@@ -14,14 +14,14 @@ public class MvpInputBoxBuilder {
         return new MvpInputBoxBuilder();
     };
 
-    private Bitmap icon=null;
+    private int iconRes= View.NO_ID;
     private String title=null, msg=null, InputValue=null;
     private int inputType = InputType.TYPE_CLASS_TEXT;
     private  MvpInputBoxPresenter.TestValue testValue=null;
 
-    public MvpInputBoxBuilder setIcon(Bitmap icon)
+    public MvpInputBoxBuilder setIcon(int iconRes)
     {
-        this.icon = icon;
+        this.iconRes = iconRes;
         return this;
     }
 
@@ -56,7 +56,7 @@ public class MvpInputBoxBuilder {
     public MvpInputBoxPresenter build(FragmentManager fragmentManager)
     {
         return
-            MvpInputBoxPresenter.createDialog( fragmentManager, icon, title, msg, InputValue, inputType, testValue);
+            MvpInputBoxPresenter.createDialog( fragmentManager, iconRes, title, msg, InputValue, inputType, testValue);
     }
 
 }

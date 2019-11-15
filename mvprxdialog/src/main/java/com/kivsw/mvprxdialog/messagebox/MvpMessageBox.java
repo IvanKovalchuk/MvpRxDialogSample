@@ -63,7 +63,7 @@ public class MvpMessageBox extends BaseMvpFragment {
         Bundle args = new Bundle();
 
         args.putLong(PRESENTER_ID, presenterId);
-        args.putInt(ICON_PARAM,iconResId);
+        args.putInt(ICON_ID,iconResId);
         args.putString(MESSAGE_PARAM,msg);
         args.putString(TITLE_PARAM,title);
         args.putBoolean(DONT_SHOW_AGAIN,askDontShowAgain);
